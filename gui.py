@@ -30,7 +30,7 @@ class FixerZApp(QMainWindow):
         try:
             # Replace with your database connection details
             db_connection = mysql.connector.connect(
-                host="NIKITA",
+                host="127.0.0.1",
                 user="root",
                 password="Nikita1234@",
                 database="fixers"
