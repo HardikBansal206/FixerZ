@@ -46,17 +46,6 @@ def check_battery_status():
     else:
         return "Battery status not available."
 
-def check_available_disk_space():
-    partitions = psutil.disk_partitions()
-    disk_status = ""
-    for partition in partitions:
-        usage = psutil.disk_usage(partition.mountpoint)
-        if usage.percent < 80:
-            disk_status += f"Disk space on {partition.device} is normal.\n"
-        else:
-            disk_status += f"Low disk space on {partition.device}: {usage.percent}%\n"
-    return disk_status
-
 def check_hostname():
     hostname = platform.node()
     return f"{hostname}"

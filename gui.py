@@ -77,17 +77,16 @@ class FixerZApp(QMainWindow):
         disk_result = scan_functions.check_disk_usage()
         network_result = scan_functions.check_network_status()
         battery_result = scan_functions.check_battery_status()
-        available_disk_space_result = scan_functions.check_available_disk_space()
         hostname_result = scan_functions.check_hostname()
         users_result = scan_functions.check_users()
-        uptime_result = scan_functions.check_system_uptime()
+        # uptime_result = scan_functions.check_system_uptime()
         arch_result = scan_functions.check_system_architecture()
         load_result = scan_functions.check_system_load()
         version_result = scan_functions.check_system_version()
 
         issue = 0
 
-        self.result_text.insertPlainText("Troubleshooting Results:\n")
+        self.result_text.insertPlainText("Basic System Details Results:\n")
         
         self.result_text.insertPlainText("Hostname:" + hostname_result + "\n")
         self.result_text.insertPlainText("Logged In Users:" + users_result + "\n")
@@ -96,6 +95,7 @@ class FixerZApp(QMainWindow):
         self.result_text.insertPlainText("System Load:" + load_result + "\n")
         self.result_text.insertPlainText("System Version:" + version_result + "\n")
 
+        self.result_text.insertPlainText("\nTroubleshooting Results:\n")
         # CPU TEST RESULT 
         if "High" in cpu_result:
             self.result_text.setCurrentCharFormat(red_format)
@@ -141,15 +141,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
         
-        # AVAILABLE DISK SPACE TEST RESULT
-        if "Low" in available_disk_space_result:
-            self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("Available Disk Space: \n" + available_disk_space_result + "\n")
-            issue += 1
-        else:
-            self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Available Disk Space: \n" + available_disk_space_result + "\n")
-
+        #FINAL RESULT
         if issue != 0:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("\n\nPotential issues detected. \nClick on the Possible Solutions button\n")
