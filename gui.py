@@ -123,11 +123,11 @@ class FixerZApp(QMainWindow):
         # DISK TEST RESULT
         if "High" in disk_result:
             self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("Disk Status: \n" + disk_result + "\n")
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
             issue += 1
         else:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: \n" + disk_result + "\n")
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
         
         # NETWORK TEST RESULT
         if "error" in network_result:
