@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import scan_functions
-import mysql.connector
 
 def run_scan():
     # Clear previous results
