@@ -76,6 +76,9 @@ class FixerZApp(QMainWindow):
         red_format = QTextCharFormat()
         red_format.setForeground(QColor("red"))
 
+        black_format = QTextCharFormat()
+        black_format.setForeground(QColor("black"))
+
         cpu_result = scan_functions.check_cpu_usage()
         ram_result = scan_functions.check_ram_usage()
         disk_result = scan_functions.check_disk_usage()
@@ -90,7 +93,7 @@ class FixerZApp(QMainWindow):
         version_result = scan_functions.check_system_version()
 
         issue = 0
-
+        self.result_text.setCurrentCharFormat(black_format)
         self.result_text.insertPlainText("Basic System Details Results:\n")
         
         self.result_text.insertPlainText("Hostname:" + hostname_result + "\n")
