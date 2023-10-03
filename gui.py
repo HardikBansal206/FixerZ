@@ -2,7 +2,36 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import scan_functions
+import mysql.connector
 
+def fetch_errors_from_database():
+    try:
+        # Connect to your MySQL database
+        conn = mysql.connector.connect(
+            host="your_host",
+            user="your_user",
+            password="your_password",
+            database="your_database"
+        )
+        
+        # Create a cursor object
+        cursor = conn.cursor(dictionary=True)
+        
+        # Execute a query to fetch error data
+        query = "SELECT Error_Code, Error_Detail, Possible_Solutions FROM your_table"
+        cursor.execute(query)
+        
+        # Fetch all rows from the result
+        error_data = cursor.fetchall()
+        
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+        
+        return error_data
+    except Exception as e:
+        return f"Database error: {str(e)}"
+    
 def run_scan():
     # Clear previous results
     result_text.config(state=tk.NORMAL)
@@ -13,7 +42,13 @@ def run_scan():
     disk_result = scan_functions.check_disk_usage()
     network_result = scan_functions.check_network_status()
     battery_result = scan_functions.check_battery_status()
-    temperature_result = scan_functions.check_temperature()
+    available_disk_space_result = scan_functions.check_available_disk_space()  # New scan function
+    hostname_result = scan_functions.check_hostname()  # New scan function
+    users_result = scan_functions.check_users()  # New scan function
+    uptime_result = scan_functions.check_system_uptime()  # New scan function
+    arch_result = scan_functions.check_system_architecture()  # New scan function
+    load_result = scan_functions.check_system_load()  # New scan function
+    version_result = scan_functions.check_system_version()  # New scan function
 
     # Display the results
     result_text.insert(tk.END, "Troubleshooting Results:\n", "blue")
@@ -22,7 +57,13 @@ def run_scan():
     result_text.insert(tk.END, "Disk Status: " + disk_result + "\n", "blue")
     result_text.insert(tk.END, "Network Status: " + network_result + "\n", "blue")
     result_text.insert(tk.END, "Battery Status: " + battery_result + "\n", "blue")
-    result_text.insert(tk.END, "Temperature Status: " + temperature_result + "\n", "blue")
+    result_text.insert(tk.END, "Available Disk Space:" + available_disk_space_result + "\n", "blue")
+    result_text.insert(tk.END, "Hostname:" + hostname_result + "\n", "blue")
+    result_text.insert(tk.END, "Logged In Users:" + users_result + "\n", "blue")
+    result_text.insert(tk.END, "System Uptime:" + uptime_result + "\n", "blue")
+    result_text.insert(tk.END, "System Architecture:" + arch_result + "\n", "blue")
+    result_text.insert(tk.END, "System Load:" + load_result + "\n", "blue")
+    result_text.insert(tk.END, "System Version:" + version_result + "\n", "blue")
 
     if "High" in cpu_result or "High" in ram_result or "High" in disk_result:
         result_text.insert(tk.END, "Potential issues detected. Consider further investigation.\n", "red")
@@ -39,8 +80,13 @@ root.title("FixerZ")
 control_frame = ttk.Frame(root)
 control_frame.pack(padx=10, pady=10)
 
+# Style
+style = ttk.Style()
+style.configure("TButton", padding=10, font=("Helvetica", 12))
+style.configure("TText", font=("Helvetica", 12))
+
 # Create a "Run Scan" button
-run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan)
+run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan, style="TButton")
 run_button.grid(row=0, column=0, padx=5, pady=5)
 
 # Create a text widget to display results
