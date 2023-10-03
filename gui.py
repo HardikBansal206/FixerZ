@@ -11,12 +11,18 @@ def run_scan():
     cpu_result = scan_functions.check_cpu_usage()
     ram_result = scan_functions.check_ram_usage()
     disk_result = scan_functions.check_disk_usage()
+    network_result = scan_functions.check_network_status()
+    battery_result = scan_functions.check_battery_status()
+    temperature_result = scan_functions.check_temperature()
 
     # Display the results
     result_text.insert(tk.END, "Troubleshooting Results:\n", "blue")
     result_text.insert(tk.END, "CPU Status: " + cpu_result + "\n", "blue")
     result_text.insert(tk.END, "RAM Status: " + ram_result + "\n", "blue")
     result_text.insert(tk.END, "Disk Status: " + disk_result + "\n", "blue")
+    result_text.insert(tk.END, "Network Status: " + network_result + "\n", "blue")
+    result_text.insert(tk.END, "Battery Status: " + battery_result + "\n", "blue")
+    result_text.insert(tk.END, "Temperature Status: " + temperature_result + "\n", "blue")
 
     if "High" in cpu_result or "High" in ram_result or "High" in disk_result:
         result_text.insert(tk.END, "Potential issues detected. Consider further investigation.\n", "red")

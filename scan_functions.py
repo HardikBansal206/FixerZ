@@ -26,3 +26,30 @@ def check_disk_usage():
         return disk_status
     else:
         return "Disk usage is normal."
+
+def check_network_status():
+    try:
+        psutil.net_if_stats()
+        return "Network is operational."
+    except Exception as e:
+        return f"Network error: {str(e)}"
+
+def check_battery_status():
+    battery = psutil.sensors_battery()
+    if battery:
+        if battery.power_plugged:
+            return f"Battery is charging ({battery.percent}% charged)."
+        else:
+            return f"Battery is discharging ({battery.percent}% charged)."
+    else:
+        return "Battery status not available."
+
+def check_temperature():
+    try:
+        temperatures = psutil.sensors_temperatures()
+        if "coretemp" in temperatures:
+            core_temp = temperatures["coretemp"]
+            if core_temp:
+                return f"CPU Core Temperature: {core_temp[0].current}°C"
+    except Exception as e:
+        return f"Temperature reading error: {str(e)}"
