@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import scan_functions
+import mysql.connector
 
 def run_scan():
     # Clear previous results
@@ -13,7 +14,13 @@ def run_scan():
     disk_result = scan_functions.check_disk_usage()
     network_result = scan_functions.check_network_status()
     battery_result = scan_functions.check_battery_status()
-    temperature_result = scan_functions.check_temperature()
+    available_disk_space_result = scan_functions.check_available_disk_space()  # New scan function
+    hostname_result = scan_functions.check_hostname()  # New scan function
+    users_result = scan_functions.check_users()  # New scan function
+    uptime_result = scan_functions.check_system_uptime()  # New scan function
+    arch_result = scan_functions.check_system_architecture()  # New scan function
+    load_result = scan_functions.check_system_load()  # New scan function
+    version_result = scan_functions.check_system_version()  # New scan function
 
     # Display the results
     result_text.insert(tk.END, "Troubleshooting Results:\n", "blue")
@@ -22,7 +29,13 @@ def run_scan():
     result_text.insert(tk.END, "Disk Status: " + disk_result + "\n", "blue")
     result_text.insert(tk.END, "Network Status: " + network_result + "\n", "blue")
     result_text.insert(tk.END, "Battery Status: " + battery_result + "\n", "blue")
-    result_text.insert(tk.END, "Temperature Status: " + temperature_result + "\n", "blue")
+    result_text.insert(tk.END, "Available Disk Space:" + available_disk_space_result + "\n", "blue")
+    result_text.insert(tk.END, "Hostname:" + hostname_result + "\n", "blue")
+    result_text.insert(tk.END, "Logged In Users:" + users_result + "\n", "blue")
+    result_text.insert(tk.END, "System Uptime:" + uptime_result + "\n", "blue")
+    result_text.insert(tk.END, "System Architecture:" + arch_result + "\n", "blue")
+    result_text.insert(tk.END, "System Load:" + load_result + "\n", "blue")
+    result_text.insert(tk.END, "System Version:" + version_result + "\n", "blue")
 
     if "High" in cpu_result or "High" in ram_result or "High" in disk_result:
         result_text.insert(tk.END, "Potential issues detected. Consider further investigation.\n", "red")
