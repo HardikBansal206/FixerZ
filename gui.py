@@ -35,7 +35,7 @@ class FixerZApp(QMainWindow):
             red_format.setForeground(QColor("red"))
             # Replace with your database connection details
             db_connection = mysql.connector.connect(
-                host="localhost",
+                host="127.0.0.1",
                 user="root",
                 password="Nikita1234@",
                 database="fixers"
