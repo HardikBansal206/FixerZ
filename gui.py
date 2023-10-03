@@ -4,6 +4,34 @@ import subprocess
 import scan_functions
 import mysql.connector
 
+def fetch_errors_from_database():
+    try:
+        # Connect to your MySQL database
+        conn = mysql.connector.connect(
+            host="your_host",
+            user="your_user",
+            password="your_password",
+            database="your_database"
+        )
+        
+        # Create a cursor object
+        cursor = conn.cursor(dictionary=True)
+        
+        # Execute a query to fetch error data
+        query = "SELECT Error_Code, Error_Detail, Possible_Solutions FROM your_table"
+        cursor.execute(query)
+        
+        # Fetch all rows from the result
+        error_data = cursor.fetchall()
+        
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+        
+        return error_data
+    except Exception as e:
+        return f"Database error: {str(e)}"
+    
 def run_scan():
     # Clear previous results
     result_text.config(state=tk.NORMAL)
