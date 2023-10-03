@@ -28,9 +28,14 @@ class FixerZApp(QMainWindow):
 
     def fetch_possible_solutions(self):
         try:
+            # Define different formats for colors
+            blue_format = QTextCharFormat()
+            blue_format.setForeground(QColor("blue"))
+            red_format = QTextCharFormat()
+            red_format.setForeground(QColor("red"))
             # Replace with your database connection details
             db_connection = mysql.connector.connect(
-                host="NIKITA",
+                host="localhost",
                 user="root",
                 password="Nikita1234@",
                 database="fixers"
@@ -52,14 +57,13 @@ class FixerZApp(QMainWindow):
             for solution in solutions:
                 self.result_text.setCurrentCharFormat(blue_format)
                 self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
-                self.result_text.setCurrentCharFormat(blue_format)
                 self.result_text.insertPlainText(f"{solution[1]}\n")
 
             cursor.close()
             db_connection.close()
         except Exception as e:
             self.result_text.clear()
-            self.set_text_color("red")
+            self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
 
     def run_scan(self):
@@ -80,6 +84,7 @@ class FixerZApp(QMainWindow):
         hostname_result = scan_functions.check_hostname()
         users_result = scan_functions.check_users()
         # uptime_result = scan_functions.check_system_uptime()
+        boot_result = scan_functions.calculate_boot_time_duration()
         arch_result = scan_functions.check_system_architecture()
         load_result = scan_functions.check_system_load()
         version_result = scan_functions.check_system_version()
@@ -91,6 +96,7 @@ class FixerZApp(QMainWindow):
         self.result_text.insertPlainText("Hostname:" + hostname_result + "\n")
         self.result_text.insertPlainText("Logged In Users:" + users_result + "\n")
         # self.result_text.insertPlainText("System Uptime:" + uptime_result + "\n")
+        self.result_text.insertPlainText("Time since last boot:" + boot_result + "\n")
         self.result_text.insertPlainText("System Architecture:" + arch_result + "\n")
         self.result_text.insertPlainText("System Load:" + load_result + "\n")
         self.result_text.insertPlainText("System Version:" + version_result + "\n")
