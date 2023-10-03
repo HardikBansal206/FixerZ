@@ -39,8 +39,13 @@ root.title("FixerZ")
 control_frame = ttk.Frame(root)
 control_frame.pack(padx=10, pady=10)
 
+# Style
+style = ttk.Style()
+style.configure("TButton", padding=10, font=("Helvetica", 12))
+style.configure("TText", font=("Helvetica", 12))
+
 # Create a "Run Scan" button
-run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan)
+run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan, style="TButton")
 run_button.grid(row=0, column=0, padx=5, pady=5)
 
 # Create a text widget to display results
