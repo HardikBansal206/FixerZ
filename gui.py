@@ -2,6 +2,37 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import scan_functions
+import mysql.connector
+
+def fetch_possible_solutions():
+    try:
+        # Replace with your database connection details
+        db_connection = mysql.connector.connect(
+            host="NIKITA",
+            user="root",
+            password="Nikita1234@",
+            database="fixers"
+        )
+
+        cursor = db_connection.cursor()
+        cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues")
+        solutions = cursor.fetchall()
+
+        # Display solutions in the text widget
+        result_text.config(state=tk.NORMAL)
+        result_text.delete("1.0", tk.END)
+        result_text.insert(tk.END, "Possible Solutions:\n", "green")
+        for solution in solutions:
+            result_text.insert(tk.END, f"Error Code {solution[0]}: {solution[1]}\n", "green")
+        result_text.config(state=tk.DISABLED)
+
+        cursor.close()
+        db_connection.close()
+    except Exception as e:
+        result_text.config(state=tk.NORMAL)
+        result_text.delete("1.0", tk.END)
+        result_text.insert(tk.END, f"Error fetching solutions: {str(e)}", "red")
+        result_text.config(state=tk.DISABLED)
 
 def run_scan():
     # Clear previous results
@@ -59,6 +90,10 @@ style.configure("TText", font=("Helvetica", 12))
 # Create a "Run Scan" button
 run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan, style="TButton")
 run_button.grid(row=0, column=0, padx=5, pady=5)
+
+# Create a "Possible Solutions" button
+solutions_button = ttk.Button(control_frame, text="Possible Solutions", command=fetch_possible_solutions, style="TButton")
+solutions_button.grid(row=0, column=1, padx=5, pady=5)
 
 # Create a text widget to display results
 result_text = tk.Text(root, wrap=tk.WORD, height=20, width=50)
