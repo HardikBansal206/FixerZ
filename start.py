@@ -4,6 +4,7 @@ import os
 import psutil
 import subprocess
 
+
 def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent < 80:
