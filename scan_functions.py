@@ -1,6 +1,7 @@
 import os
 import psutil
 import platform
+from datetime import datetime
 
 def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
@@ -69,8 +70,10 @@ def check_users():
 
 def check_system_uptime():
     try:
-        uptime = psutil.boot_time()
-        return f"{uptime} seconds"
+        uptime_seconds = psutil.boot_time()
+        uptime_datetime = datetime.fromtimestamp(uptime_seconds)
+        formatted_uptime = uptime_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        return formatted_uptime
     except Exception as e:
         return f"Uptime retrieval error: {str(e)}"
     
