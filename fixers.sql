@@ -14,6 +14,6 @@ values('HI1','No bootable device found','1. Switch off the system.
 section.
 11. Ensure that in BIOS the RAID setting is set to RAID mode for SATA drives.
 12. Save the setting, and reboot the server.
-13. If the issue persists, contact Dell Technical Support for assistance.
+13. If the issue persists, contact Technical Support for assistance.
 ');
 select * from systemissues;
