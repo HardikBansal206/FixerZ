@@ -115,24 +115,8 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
 
-    def run_scan(self):
-        self.result_text.clear()
-
-        # Define different formats for colors
-        blue_format = QTextCharFormat()
-        blue_format.setForeground(QColor("blue"))
-
-        red_format = QTextCharFormat()
-        red_format.setForeground(QColor("red"))
-
-        black_format = QTextCharFormat()
-        black_format.setForeground(QColor("black"))
-
-        cpu_result = scan_functions.check_cpu_usage()
-        ram_result = scan_functions.check_ram_usage()
-        disk_result = scan_functions.check_disk_usage()
-        network_result = scan_functions.check_network_status()
-        battery_result = scan_functions.check_battery_status() 
+    def start(self):  
+        # get system specs
         hostname_result = scan_functions.check_hostname()
         users_result = scan_functions.check_users()
         # uptime_result = scan_functions.check_system_uptime()
