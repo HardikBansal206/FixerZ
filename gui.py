@@ -106,17 +106,21 @@ class FixerZApp(QMainWindow):
                 database="fixers"
             )
 
-            cursor = db_connection.cursor()
-            for i in ec:
-                cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
-                solutions = cursor.fetchall()
-                self.result_text.insertPlainText("Possible Solutions:\n")
-                for solution in solutions:
-                    self.result_text.setCurrentCharFormat(green_format)
-                    self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
-                    self.result_text.insertPlainText(f"{solution[1]}\n")
-            cursor.close()
-            db_connection.close()
+            if len(ec) == 0:
+                self.result_text.insertPlainText("NO ISSUES FOUND")
+
+            else:
+                cursor = db_connection.cursor()
+                for i in ec:
+                    cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
+                    solutions = cursor.fetchall()
+                    self.result_text.insertPlainText("Possible Solutions:\n")
+                    for solution in solutions:
+                        self.result_text.setCurrentCharFormat(green_format)
+                        self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
+                        self.result_text.insertPlainText(f"{solution[1]}\n")
+                cursor.close()
+                db_connection.close()
 
         except Exception as e:
             self.result_text.clear()
@@ -146,7 +150,7 @@ class FixerZApp(QMainWindow):
         self.specs_text.insertPlainText("System Load:\t\t" + load_result + "\n")
 
     def run_scan(self):
-
+        ec = []
         self.result_text.clear()
         self.specs_text.clear()
         self.start()
@@ -155,6 +159,7 @@ class FixerZApp(QMainWindow):
         disk_result = scan_functions.check_disk_usage()
         network_result = scan_functions.check_network_status()
         battery_result = scan_functions.check_battery_status()
+        usb_status = scan_functions.check_usb_ports()
 
         issue = 0
 
@@ -166,16 +171,18 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n")
             issue += 1
+            ec.append(["HI4"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n")
-            ec.append(["HI4"])
+            
 
         # RAM TEST RESULT
         if "High" in ram_result:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n")
             issue += 1
+            ec.append(["HI5"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n")
@@ -185,6 +192,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n")
             issue += 1
+            ec.append(["SI1"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n")
@@ -194,19 +202,34 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
             issue += 1
+            ec.append(["HI3"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
         
+        #USB TEST RESULT
+        if "not" in usb_status or "Error" in usb_status:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("USB Status: \t" + usb_status + "\n")
+            issue += 1
+            ec.append(["HI2"])
+        elif "No USB devices found." in usb_status:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("USB Status: \t" +"USB device not found.\n")
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("USB Status: \t" + usb_status + "\n")
+
         # DISK TEST RESULT
         if "High" in disk_result:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Disk Status: \n" + disk_result + "\n")
             issue += 1
+            ec.append(["HI6"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
-        
+
         #FINAL RESULT
         if issue != 0:
             self.result_text.setCurrentCharFormat(red_format)
