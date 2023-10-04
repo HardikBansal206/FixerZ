@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
+from PyQt5.QtCore import Qt
 import scan_functions
 import mysql.connector as mysql
 
@@ -57,7 +58,7 @@ class FixerZApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FixerZ")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 800, 800)
         self.setAutoFillBackground(True)
 
         self.central_widget = QWidget(self)
@@ -67,12 +68,12 @@ class FixerZApp(QMainWindow):
         
         self.button_layout = QHBoxLayout()
         self.run_button = QPushButton("Run Scan", self)
-        self.run_button.setStyleSheet("background-color: #18314F; color: white; font-weight: bold;")
+        self.run_button.setStyleSheet("background-color: #65B891; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
         self.run_button.clicked.connect(self.run_scan)
         self.button_layout.addWidget(self.run_button)
 
         self.solutions_button = QPushButton("Possible Solutions", self)
-        self.solutions_button.setStyleSheet("background-color: #1f7a8c; color: white; font-weight: bold;")
+        self.solutions_button.setStyleSheet("background-color: #1f7a8c; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
         self.solutions_button.clicked.connect(self.fetch_possible_solutions)
         self.button_layout.addWidget(self.solutions_button)
 
@@ -81,14 +82,14 @@ class FixerZApp(QMainWindow):
         self.specs_text = QTextEdit(self)
         self.specs_text.setStyleSheet("background-color: #0D0630;border: none;")
         self.specs_text.setReadOnly(True)
-        self.specs_text.setMinimumSize(780, 90)
         self.specs_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.layout.addWidget(self.specs_text)
 
         self.result_text = QTextEdit(self)
         self.result_text.setStyleSheet("background-color: #111111; color: white;border: none;")
         self.result_text.setReadOnly(True)
-        self.result_text.setMinimumSize(780, 360)
+        self.result_text.setMinimumSize(780, 550)
         self.result_text.setContentsMargins(10, 10, 10, 10)
         self.layout.addWidget(self.result_text)
 
@@ -106,23 +107,22 @@ class FixerZApp(QMainWindow):
                 password="Nikita1234@",
                 database="fixers"
             )
-
             if len(ec) == 0:
                 self.result_text.setCurrentCharFormat(green_format)
                 self.result_text.insertPlainText("NO ISSUES FOUND")
-
             else:
-                cursor = db_connection.cursor()
-                cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
-                print("gvdchg")
-                solutions = cursor.fetchall()
-                self.result_text.insertPlainText("Possible Solutions:\n")
-                for solution in solutions:
-                    self.result_text.setCurrentCharFormat(green_format)
-                    self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
-                    self.result_text.insertPlainText(f"{solution[1]}\n")
-                cursor.close()
-                db_connection.close()
+                for i in ec:
+                    cursor = db_connection.cursor()
+                    cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
+                    print("gvdchg")
+                    solutions = cursor.fetchall()
+                    self.result_text.insertPlainText("Possible Solutions:\n")
+                    for solution in solutions:
+                        self.result_text.setCurrentCharFormat(green_format)
+                        self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
+                        self.result_text.insertPlainText(f"{solution[1]}\n")
+                    cursor.close()
+                    db_connection.close()
 
         except Exception as e:
             self.result_text.clear()
@@ -161,7 +161,9 @@ class FixerZApp(QMainWindow):
         disk_result = scan_functions.check_disk_usage()
         network_result = scan_functions.check_network_status()
         battery_result = scan_functions.check_battery_status()
-        # usb_status = scan_functions.check_usb_ports()
+        usb_status = scan_functions.check_usb_ports()
+        camera_status = scan_functions.check_camera()
+        mic_status = scan_functions.check_microphone()
 
         issue = 0
 
@@ -209,18 +211,20 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
         
-        # #USB TEST RESULT
-        # if "not" in usb_status or "Error" in usb_status:
-        #     self.result_text.setCurrentCharFormat(red_format)
-        #     self.result_text.insertPlainText("USB Status: \t" + usb_status + "\n")
-        #     issue += 1
-        #     ec.append(["HI2"])
-        # elif "No USB devices found." in usb_status:
-        #     self.result_text.setCurrentCharFormat(blue_format)
-        #     self.result_text.insertPlainText("USB Status: \t" +"USB device not found.\n")
-        # else:
-        #     self.result_text.setCurrentCharFormat(blue_format)
-        #     self.result_text.insertPlainText("USB Status: \t" + usb_status + "\n")
+        #USB TEST RESULT
+        if "not" in usb_status or "Error" in usb_status:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("USB Devices: \t" + usb_status + "\n")
+            issue += 1
+            ec.append(["HI2"])
+        elif "No USB devices found." in usb_status:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("USB Devices: \t" +"USB device not found.\n")
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("USB Devices:")
+            for i in usb_status:
+                self.result_text.insertPlainText("\t\t" + i + "\n")
 
         # DISK TEST RESULT
         if "High" in disk_result:
@@ -231,6 +235,26 @@ class FixerZApp(QMainWindow):
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+
+        # CAMERA TEST RESULT
+        if "not" in camera_status or "error" in camera_status:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Camera Status: \t" + camera_status + "\n")
+            issue += 1
+            ec.append(["HI7"])
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Camera Status: \t" + camera_status + "\n")
+
+        # MICROPHONE TEST RESULT
+        if "not" in mic_status or "error" in mic_status:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Microphone Status: \t" + mic_status + "\n")
+            issue += 1
+            ec.append(["HI8"])
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Microphone Status: \t" + mic_status + "\n")
 
         #FINAL RESULT
         if issue != 0:

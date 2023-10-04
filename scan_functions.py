@@ -3,8 +3,10 @@ import psutil
 import platform
 from datetime import datetime
 import subprocess
-import usb.core
-import usb.util
+import wmi
+import cv2
+import pyaudio
+
 
 def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
@@ -110,22 +112,35 @@ def check_system_version():
     except Exception as e:
         return f"Version retrieval error: {str(e)}"
 
-# def check_usb_ports():
-#     usb_context = list(usb.core.find(find_all=True))
-#     if not usb_context:
-#         return "No USB devices found."
-#     usb_status = ""
-#     for device in usb_context:
-#         try:
-#             device.reset()
-#             if device:
-#                 usb_status += f"USB device {device} is working.\n"
-#             else:
-#                 usb_status += f"USB device {device} is not recognized.\n"
-#         except Exception as e:
-#             usb_status += f"Error checking USB device: {e}\n"
-#     if usb_status:
-#         return usb_status
-#     else:
-#         return "All USB devices are working."
+def check_usb_ports():
+    usb_device_info = []
+    c = wmi.WMI()
 
+    for device in c.Win32_PnPEntity():
+        caption = device.Caption
+        if caption and 'USB' in caption:
+            usb_device_info.append(caption)
+
+    return usb_device_info
+
+
+def check_camera():
+    try:
+        cap = cv2.VideoCapture(0)  # Open the default camera (usually the built-in webcam)
+        if cap.isOpened():
+            return "Camera is working fine."
+        else:
+            return "Camera is not working."
+    except Exception as e:
+        return f"Camera error: {str(e)}"
+
+def check_microphone():
+    try:
+        audio = pyaudio.PyAudio()
+        for i in range(audio.get_device_count()):
+            device_info = audio.get_device_info_by_index(i)
+            if "microphone" in device_info["name"].lower():
+                return "Microphone is working fine."
+        return "Microphone is not working."
+    except Exception as e:
+        return f"Microphone error: {str(e)}"
