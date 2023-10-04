@@ -2,13 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import scan_functions
-import mysql.connector
+import mysql.connector as mysql
 
 def fetch_possible_solutions():
     try:
         # Replace with your database connection details
-        db_connection = mysql.connector.connect(
-            host="NIKITA",
+        db_connection = mysql.connect(
+            host="127.0.0.1",
             user="root",
             password="Nikita1234@",
             database="fixers"
