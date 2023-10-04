@@ -19,4 +19,5 @@ section.
 insert into systemissues values('HI2','USB device not connected.','1. Disconnect the device and reconnect them. \n2. If the problem persists, connect
  the keyboard and/or mouse to another USB port on the system. \n3. Turn off all attached USB devices, and disconnect them from the system and restart the sy
 stem. \n5. Reconnect and turn on each USB device one at a time. \n6.If the problem persists, get help from the support center.');
-select * from systemissues;
+ 
+ select * from systemissues;
