@@ -83,7 +83,7 @@ class FixerZApp(QMainWindow):
         ram_result = scan_functions.check_ram_usage()
         disk_result = scan_functions.check_disk_usage()
         network_result = scan_functions.check_network_status()
-        battery_result = scan_functions.check_battery_status()
+        battery_result = scan_functions.check_battery_status() 
         hostname_result = scan_functions.check_hostname()
         users_result = scan_functions.check_users()
         # uptime_result = scan_functions.check_system_uptime()
