@@ -4,6 +4,9 @@ from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
 import scan_functions
 import mysql.connector as mysql
 
+#List of error codes
+ec = []
+
 # Design presets for text formats
 
 heading = QTextCharFormat()
@@ -41,13 +44,13 @@ red_format.setFont(font)
 black_format = QTextCharFormat()
 black_format.setForeground(QColor("black"))
 
-red_format = QTextCharFormat()
-red_format.setForeground(QColor("#ED254E"))
+green_format = QTextCharFormat()
+green_format.setForeground(QColor("#E6F9AF"))
 font = QFont()
 font.setPointSize(10)
 font.setFamily("Arial")
 font.setBold(False)
-red_format.setFont(font)
+green_format.setFont(font)
 
 class FixerZApp(QMainWindow):
     def __init__(self):
@@ -92,6 +95,9 @@ class FixerZApp(QMainWindow):
 
     def fetch_possible_solutions(self):
         try:
+            self.result_text.clear()
+            self.specs_text.clear()
+            self.start()
             # Replace with your database connection details
             db_connection = mysql.connect(
                 host="127.0.0.1",
@@ -101,22 +107,17 @@ class FixerZApp(QMainWindow):
             )
 
             cursor = db_connection.cursor()
-            ec = ["HI1"]
-            cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (ec))
-            solutions = cursor.fetchall()
-
-            # Clear existing text
-            self.result_text.clear()
-
-            # Display solutions in the text widget
-            self.result_text.insertPlainText("Possible Solutions:\n")
-            for solution in solutions:
-                self.result_text.setCurrentCharFormat(blue_format)
-                self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
-                self.result_text.insertPlainText(f"{solution[1]}\n")
-
+            for i in ec:
+                cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (ec))
+                solutions = cursor.fetchall()
+                self.result_text.insertPlainText("Possible Solutions:\n")
+                for solution in solutions:
+                    self.result_text.setCurrentCharFormat(green_format)
+                    self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
+                    self.result_text.insertPlainText(f"{solution[1]}\n")
             cursor.close()
             db_connection.close()
+
         except Exception as e:
             self.result_text.clear()
             self.result_text.setCurrentCharFormat(red_format)
@@ -141,8 +142,8 @@ class FixerZApp(QMainWindow):
         # self.specs_text.insertPlainText("System Uptime:" + uptime_result + "\n")
         self.specs_text.insertPlainText("Time since last boot:\t\t" + boot_result + "\n")
         self.specs_text.insertPlainText("System Architecture:\t\t" + arch_result + "\n")
-        self.specs_text.insertPlainText("System Load:\t\t" + load_result + "\n")
         self.specs_text.insertPlainText("System Version:\t\t" + version_result + "\n")
+        self.specs_text.insertPlainText("System Load:\t\t" + load_result + "\n")
 
     def run_scan(self):
 
@@ -168,6 +169,7 @@ class FixerZApp(QMainWindow):
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n")
+            ec.append(["HI4"])
 
         # RAM TEST RESULT
         if "High" in ram_result:

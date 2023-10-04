@@ -2,18 +2,21 @@ import os
 import psutil
 import platform
 from datetime import datetime
+import subprocess
+import usb.core
+import usb.util
 
 def check_cpu_usage():
     cpu_percent = psutil.cpu_percent(interval=1)
     if cpu_percent < 80:
-        return "CPU usage is normal."
+        return f"CPU Usage is normal: {cpu_percent}%"
     else:
         return f"High CPU usage detected: {cpu_percent}%"
 
 def check_ram_usage():
     ram = psutil.virtual_memory()
     if ram.percent < 80:
-        return "RAM usage is normal."
+        return f"RAM usage is normal: {ram.percent}%"
     else:
         return f"High RAM usage detected: {ram.percent}%"
 
@@ -92,10 +95,13 @@ def check_system_architecture():
     
 def check_system_load():
     try:
-        load = psutil.getloadavg()
-        return f"Load average (1min, 5min, 15min): {load[0]}, {load[1]}, {load[2]}"
+        # Run the wmic command to get load information
+        result = subprocess.check_output(["wmic", "cpu", "get", "loadpercentage"])
+        # Decode the result and remove any unwanted characters
+        load_percentage = result.decode("utf-8").strip().split("\n")[1]
+        return f"Load Percentage: {load_percentage}%"
     except Exception as e:
-        return f"Load average retrieval error: {str(e)}"
+        return f"Load percentage retrieval error: {str(e)}"
     
 def check_system_version():
     try:
@@ -103,5 +109,31 @@ def check_system_version():
         return f"{version}"
     except Exception as e:
         return f"Version retrieval error: {str(e)}"
-    
+
+def check_usb_ports():
+    # Initialize the USB context
+    usb_context = usb.core.find(find_all=True)
+
+    if len(usb_context) == 0:
+        return "No USB devices found."
+
+    # Initialize a variable to store the status
+    usb_status = ""
+
+    # Iterate through all USB devices
+    for device in usb_context:
+        try:
+            device.reset()
+            # Check if the device is recognized
+            if device:
+                usb_status += f"USB device {device} is working.\n"
+            else:
+                usb_status += f"USB device {device} is not recognized.\n"
+        except Exception as e:
+            usb_status += f"Error checking USB device: {e}\n"
+
+    if usb_status:
+        return usb_status
+    else:
+        return "All USB devices are working."
 
