@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
 import scan_functions
 import mysql.connector
 
@@ -8,6 +8,8 @@ class FixerZApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FixerZ")
+        self.setGeometry(100, 100, 800, 600)
+        self.setAutoFillBackground(True)
 
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
@@ -15,14 +17,17 @@ class FixerZApp(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
 
         self.run_button = QPushButton("Run Scan", self)
+        self.run_button.setStyleSheet("background-color: #1a6985; color: white; font-weight: bold;")
         self.run_button.clicked.connect(self.run_scan)
         self.layout.addWidget(self.run_button)
 
         self.solutions_button = QPushButton("Possible Solutions", self)
+        self.solutions_button.setStyleSheet("background-color: #2ecc71; color: white; font-weight: bold;")
         self.solutions_button.clicked.connect(self.fetch_possible_solutions)
         self.layout.addWidget(self.solutions_button)
 
         self.result_text = QTextEdit(self)
+        self.result_text.setStyleSheet("background-color: #111111; color: white;border: none;")
         self.result_text.setReadOnly(True)
         self.layout.addWidget(self.result_text)
 
@@ -30,7 +35,7 @@ class FixerZApp(QMainWindow):
         try:
             # Define different formats for colors
             blue_format = QTextCharFormat()
-            blue_format.setForeground(QColor("blue"))
+            blue_format.setForeground(QColor("#1a6985"))
             red_format = QTextCharFormat()
             red_format.setForeground(QColor("red"))
             # Replace with your database connection details
@@ -70,11 +75,37 @@ class FixerZApp(QMainWindow):
         self.result_text.clear()
 
         # Define different formats for colors
+        
+        heading = QTextCharFormat()
+        heading.setForeground(QColor("white"))
+        font = QFont()
+        font.setPointSize(14)
+        font.setFamily("Arial")
+        font.setBold(True)
+        heading.setFont(font)
+
+        sub_heading = QTextCharFormat()
+        font = QFont()
+        font.setPointSize(10)
+        font.setFamily("Arial")
+        font.setBold(False)
+        sub_heading.setFont(font)
+
         blue_format = QTextCharFormat()
-        blue_format.setForeground(QColor("blue"))
+        blue_format.setForeground(QColor("#3772FF"))
+        font = QFont()
+        font.setPointSize(10)
+        font.setFamily("Arial")
+        font.setBold(False)
+        blue_format.setFont(font)
 
         red_format = QTextCharFormat()
-        red_format.setForeground(QColor("red"))
+        red_format.setForeground(QColor("#DF2935"))
+        font = QFont()
+        font.setPointSize(10)
+        font.setFamily("Arial")
+        font.setBold(False)
+        red_format.setFont(font)
 
         black_format = QTextCharFormat()
         black_format.setForeground(QColor("black"))
@@ -93,18 +124,21 @@ class FixerZApp(QMainWindow):
         version_result = scan_functions.check_system_version()
 
         issue = 0
-        self.result_text.setCurrentCharFormat(black_format)
+        self.result_text.setCurrentCharFormat(heading)
         self.result_text.insertPlainText("Basic System Details Results:\n")
         
-        self.result_text.insertPlainText("Hostname:" + hostname_result + "\n")
-        self.result_text.insertPlainText("Logged In Users:" + users_result + "\n")
+        self.result_text.setCurrentCharFormat(sub_heading)
+        self.result_text.insertPlainText("Hostname:\t\t\t" + hostname_result + "\n")
+        self.result_text.insertPlainText("Logged In Users:\t\t" + users_result + "\n")
         # self.result_text.insertPlainText("System Uptime:" + uptime_result + "\n")
-        self.result_text.insertPlainText("Time since last boot:" + boot_result + "\n")
-        self.result_text.insertPlainText("System Architecture:" + arch_result + "\n")
-        self.result_text.insertPlainText("System Load:" + load_result + "\n")
-        self.result_text.insertPlainText("System Version:" + version_result + "\n")
+        self.result_text.insertPlainText("Time since last boot:\t\t" + boot_result + "\n")
+        self.result_text.insertPlainText("System Architecture:\t\t" + arch_result + "\n")
+        self.result_text.insertPlainText("System Load:\t\t" + load_result + "\n")
+        self.result_text.insertPlainText("System Version:\t\t" + version_result + "\n")
 
-        self.result_text.insertPlainText("\nTroubleshooting Results:\n")
+        self.result_text.setCurrentCharFormat(heading)
+        self.result_text.insertPlainText("\n\nTroubleshooting Results:\n")
+        self.result_text.setCurrentCharFormat(sub_heading)
         # CPU TEST RESULT 
         if "High" in cpu_result:
             self.result_text.setCurrentCharFormat(red_format)
@@ -122,15 +156,6 @@ class FixerZApp(QMainWindow):
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n")
-        
-        # DISK TEST RESULT
-        if "High" in disk_result:
-            self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
-            issue += 1
-        else:
-            self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
         
         # NETWORK TEST RESULT
         if "error" in network_result:
@@ -150,6 +175,15 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
         
+        # DISK TEST RESULT
+        if "High" in disk_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Disk Status: \n" + disk_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+        
         #FINAL RESULT
         if issue != 0:
             self.result_text.setCurrentCharFormat(red_format)
@@ -157,6 +191,7 @@ class FixerZApp(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyleSheet("QMainWindow { background-color: #2c3e50; }")
     window = FixerZApp()
     window.show()
     sys.exit(app.exec_())
