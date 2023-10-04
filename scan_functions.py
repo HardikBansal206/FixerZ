@@ -46,17 +46,6 @@ def check_battery_status():
     else:
         return "Battery status not available."
 
-def check_available_disk_space():
-    partitions = psutil.disk_partitions()
-    disk_status = ""
-    for partition in partitions:
-        usage = psutil.disk_usage(partition.mountpoint)
-        if usage.percent < 80:
-            disk_status += f"Disk space on {partition.device} is normal.\n"
-        else:
-            disk_status += f"Low disk space on {partition.device}: {usage.percent}%\n"
-    return disk_status
-
 def check_hostname():
     hostname = platform.node()
     return f"{hostname}"
@@ -76,7 +65,24 @@ def check_system_uptime():
         return formatted_uptime
     except Exception as e:
         return f"Uptime retrieval error: {str(e)}"
-    
+
+def calculate_boot_time_duration():
+    try:
+        boot_time_seconds = psutil.boot_time()
+        current_time_seconds = datetime.now().timestamp()
+        boot_duration_seconds = current_time_seconds - boot_time_seconds
+        boot_duration_formatted = format_boot_time_duration(boot_duration_seconds)
+        return boot_duration_formatted
+    except Exception as e:
+        return f"Boot time duration retrieval error: {str(e)}"
+
+def format_boot_time_duration(duration_seconds):
+    minutes, seconds = divmod(duration_seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    return f"{int(days)} days, {int(hours)} hours, {int(minutes)} minutes, {int(seconds)} seconds"
+
+
 def check_system_architecture():
     try:
         arch = platform.architecture()

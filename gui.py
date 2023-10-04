@@ -1,105 +1,162 @@
-import tkinter as tk
-from tkinter import ttk
-import subprocess
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor
 import scan_functions
 import mysql.connector as mysql
 
-def fetch_possible_solutions():
-    try:
-        # Replace with your database connection details
-        db_connection = mysql.connect(
-            host="127.0.0.1",
-            user="root",
-            password="Nikita1234@",
-            database="fixers"
-        )
+class FixerZApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("FixerZ")
 
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues")
-        solutions = cursor.fetchall()
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
 
-        # Display solutions in the text widget
-        result_text.config(state=tk.NORMAL)
-        result_text.delete("1.0", tk.END)
-        result_text.insert(tk.END, "Possible Solutions:\n", "green")
-        for solution in solutions:
-            result_text.insert(tk.END, f"Error Code {solution[0]}: {solution[1]}\n", "green")
-        result_text.config(state=tk.DISABLED)
+        self.layout = QVBoxLayout(self.central_widget)
 
-        cursor.close()
-        db_connection.close()
-    except Exception as e:
-        result_text.config(state=tk.NORMAL)
-        result_text.delete("1.0", tk.END)
-        result_text.insert(tk.END, f"Error fetching solutions: {str(e)}", "red")
-        result_text.config(state=tk.DISABLED)
+        self.run_button = QPushButton("Run Scan", self)
+        self.run_button.clicked.connect(self.run_scan)
+        self.layout.addWidget(self.run_button)
 
-def run_scan():
-    # Clear previous results
-    result_text.config(state=tk.NORMAL)
-    result_text.delete("1.0", tk.END)
-    
-    cpu_result = scan_functions.check_cpu_usage()
-    ram_result = scan_functions.check_ram_usage()
-    disk_result = scan_functions.check_disk_usage()
-    network_result = scan_functions.check_network_status()
-    battery_result = scan_functions.check_battery_status()
-    available_disk_space_result = scan_functions.check_available_disk_space()  # New scan function
-    hostname_result = scan_functions.check_hostname()  # New scan function
-    users_result = scan_functions.check_users()  # New scan function
-    uptime_result = scan_functions.check_system_uptime()  # New scan function
-    arch_result = scan_functions.check_system_architecture()  # New scan function
-    load_result = scan_functions.check_system_load()  # New scan function
-    version_result = scan_functions.check_system_version()  # New scan function
+        self.solutions_button = QPushButton("Possible Solutions", self)
+        self.solutions_button.clicked.connect(self.fetch_possible_solutions)
+        self.layout.addWidget(self.solutions_button)
 
-    # Display the results
-    result_text.insert(tk.END, "Troubleshooting Results:\n", "blue")
-    result_text.insert(tk.END, "CPU Status: " + cpu_result + "\n", "blue")
-    result_text.insert(tk.END, "RAM Status: " + ram_result + "\n", "blue")
-    result_text.insert(tk.END, "Disk Status: " + disk_result + "\n", "blue")
-    result_text.insert(tk.END, "Network Status: " + network_result + "\n", "blue")
-    result_text.insert(tk.END, "Battery Status: " + battery_result + "\n", "blue")
-    result_text.insert(tk.END, "Available Disk Space:" + available_disk_space_result + "\n", "blue")
-    result_text.insert(tk.END, "Hostname:" + hostname_result + "\n", "blue")
-    result_text.insert(tk.END, "Logged In Users:" + users_result + "\n", "blue")
-    result_text.insert(tk.END, "System Uptime:" + uptime_result + "\n", "blue")
-    result_text.insert(tk.END, "System Architecture:" + arch_result + "\n", "blue")
-    result_text.insert(tk.END, "System Load:" + load_result + "\n", "blue")
-    result_text.insert(tk.END, "System Version:" + version_result + "\n", "blue")
+        self.result_text = QTextEdit(self)
+        self.result_text.setReadOnly(True)
+        self.layout.addWidget(self.result_text)
 
-    if "High" in cpu_result or "High" in ram_result or "High" in disk_result:
-        result_text.insert(tk.END, "Potential issues detected. Consider further investigation.\n", "red")
-    else:
-        result_text.insert(tk.END, "All components are working fine.\n", "blue")
-    
-    result_text.config(state=tk.DISABLED)
+    def fetch_possible_solutions(self):
+        try:
+            # Define different formats for colors
+            blue_format = QTextCharFormat()
+            blue_format.setForeground(QColor("blue"))
+            red_format = QTextCharFormat()
+            red_format.setForeground(QColor("red"))
+            # Replace with your database connection details
+            db_connection = mysql.connect(
+                host="127.0.0.1",
+                user="root",
+                password="Nikita1234@",
+                database="fixers"
+            )
 
-# Create the main window
-root = tk.Tk()
-root.title("FixerZ")
+            cursor = db_connection.cursor()
+            cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues")
+            solutions = cursor.fetchall()
 
-# Create a frame for the controls
-control_frame = ttk.Frame(root)
-control_frame.pack(padx=10, pady=10)
+            # Clear existing text
+            self.result_text.clear()
 
-# Style
-style = ttk.Style()
-style.configure("TButton", padding=10, font=("Helvetica", 12))
-style.configure("TText", font=("Helvetica", 12))
+            # Define different formats for colors
+            blue_format = QTextCharFormat()
+            blue_format.setForeground(QColor("blue"))
 
-# Create a "Run Scan" button
-run_button = ttk.Button(control_frame, text="Run Scan", command=run_scan, style="TButton")
-run_button.grid(row=0, column=0, padx=5, pady=5)
+            # Display solutions in the text widget
+            self.result_text.insertPlainText("Possible Solutions:\n")
+            for solution in solutions:
+                self.result_text.setCurrentCharFormat(blue_format)
+                self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
+                self.result_text.insertPlainText(f"{solution[1]}\n")
 
-# Create a "Possible Solutions" button
-solutions_button = ttk.Button(control_frame, text="Possible Solutions", command=fetch_possible_solutions, style="TButton")
-solutions_button.grid(row=0, column=1, padx=5, pady=5)
+            cursor.close()
+            db_connection.close()
+        except Exception as e:
+            self.result_text.clear()
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
 
-# Create a text widget to display results
-result_text = tk.Text(root, wrap=tk.WORD, height=20, width=50)
-result_text.pack(padx=10, pady=10)
-result_text.tag_config("red", foreground="red")
-result_text.tag_config("blue", foreground="blue")
-result_text.config(state=tk.DISABLED)
+    def run_scan(self):
+        self.result_text.clear()
 
-root.mainloop()
+        # Define different formats for colors
+        blue_format = QTextCharFormat()
+        blue_format.setForeground(QColor("blue"))
+
+        red_format = QTextCharFormat()
+        red_format.setForeground(QColor("red"))
+
+        black_format = QTextCharFormat()
+        black_format.setForeground(QColor("black"))
+
+        cpu_result = scan_functions.check_cpu_usage()
+        ram_result = scan_functions.check_ram_usage()
+        disk_result = scan_functions.check_disk_usage()
+        network_result = scan_functions.check_network_status()
+        battery_result = scan_functions.check_battery_status()
+        hostname_result = scan_functions.check_hostname()
+        users_result = scan_functions.check_users()
+        # uptime_result = scan_functions.check_system_uptime()
+        boot_result = scan_functions.calculate_boot_time_duration()
+        arch_result = scan_functions.check_system_architecture()
+        load_result = scan_functions.check_system_load()
+        version_result = scan_functions.check_system_version()
+
+        issue = 0
+        self.result_text.setCurrentCharFormat(black_format)
+        self.result_text.insertPlainText("Basic System Details Results:\n")
+        
+        self.result_text.insertPlainText("Hostname:" + hostname_result + "\n")
+        self.result_text.insertPlainText("Logged In Users:" + users_result + "\n")
+        # self.result_text.insertPlainText("System Uptime:" + uptime_result + "\n")
+        self.result_text.insertPlainText("Time since last boot:" + boot_result + "\n")
+        self.result_text.insertPlainText("System Architecture:" + arch_result + "\n")
+        self.result_text.insertPlainText("System Load:" + load_result + "\n")
+        self.result_text.insertPlainText("System Version:" + version_result + "\n")
+
+        self.result_text.insertPlainText("\nTroubleshooting Results:\n")
+        # CPU TEST RESULT 
+        if "High" in cpu_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n")
+
+        # RAM TEST RESULT
+        if "High" in ram_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n")
+        
+        # DISK TEST RESULT
+        if "High" in disk_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+        
+        # NETWORK TEST RESULT
+        if "error" in network_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Network Status: \t" + network_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Network Status: \t" + network_result + "\n")
+
+        # BATTERY TEST RESULT
+        if "not" in battery_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
+            issue += 1
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Battery Status: \t" + battery_result + "\n")
+        
+        #FINAL RESULT
+        if issue != 0:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("\n\nPotential issues detected. \nClick on the Possible Solutions button\n")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = FixerZApp()
+    window.show()
+    sys.exit(app.exec_())
