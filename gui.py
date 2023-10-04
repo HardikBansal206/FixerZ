@@ -101,8 +101,8 @@ class FixerZApp(QMainWindow):
             )
 
             cursor = db_connection.cursor()
-            ec = "HI1"
-            cursor.execute("Possible_Solutions FROM systemissues where Error_Code = %s", (ec))
+            ec = ["HI1"]
+            cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (ec))
             solutions = cursor.fetchall()
 
             # Clear existing text
