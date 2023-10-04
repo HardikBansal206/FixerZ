@@ -41,7 +41,13 @@ red_format.setFont(font)
 black_format = QTextCharFormat()
 black_format.setForeground(QColor("black"))
 
-
+red_format = QTextCharFormat()
+red_format.setForeground(QColor("#ED254E"))
+font = QFont()
+font.setPointSize(10)
+font.setFamily("Arial")
+font.setBold(False)
+red_format.setFont(font)
 
 class FixerZApp(QMainWindow):
     def __init__(self):
@@ -95,7 +101,8 @@ class FixerZApp(QMainWindow):
             )
 
             cursor = db_connection.cursor()
-            cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues")
+            ec = "HI1"
+            cursor.execute("Possible_Solutions FROM systemissues where Error_Code = %s", (ec))
             solutions = cursor.fetchall()
 
             # Clear existing text
@@ -140,7 +147,8 @@ class FixerZApp(QMainWindow):
     def run_scan(self):
 
         self.result_text.clear()
-
+        self.specs_text.clear()
+        self.start()
         cpu_result = scan_functions.check_cpu_usage()
         ram_result = scan_functions.check_ram_usage()
         disk_result = scan_functions.check_disk_usage()
