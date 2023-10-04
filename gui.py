@@ -107,6 +107,7 @@ class FixerZApp(QMainWindow):
             )
 
             if len(ec) == 0:
+                self.result_text.setCurrentCharFormat(green_format)
                 self.result_text.insertPlainText("NO ISSUES FOUND")
 
             else:
