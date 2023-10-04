@@ -110,22 +110,22 @@ def check_system_version():
     except Exception as e:
         return f"Version retrieval error: {str(e)}"
 
-def check_usb_ports():
-    usb_context = list(usb.core.find(find_all=True))
-    if not usb_context:
-        return "No USB devices found."
-    usb_status = ""
-    for device in usb_context:
-        try:
-            device.reset()
-            if device:
-                usb_status += f"USB device {device} is working.\n"
-            else:
-                usb_status += f"USB device {device} is not recognized.\n"
-        except Exception as e:
-            usb_status += f"Error checking USB device: {e}\n"
-    if usb_status:
-        return usb_status
-    else:
-        return "All USB devices are working."
+# def check_usb_ports():
+#     usb_context = list(usb.core.find(find_all=True))
+#     if not usb_context:
+#         return "No USB devices found."
+#     usb_status = ""
+#     for device in usb_context:
+#         try:
+#             device.reset()
+#             if device:
+#                 usb_status += f"USB device {device} is working.\n"
+#             else:
+#                 usb_status += f"USB device {device} is not recognized.\n"
+#         except Exception as e:
+#             usb_status += f"Error checking USB device: {e}\n"
+#     if usb_status:
+#         return usb_status
+#     else:
+#         return "All USB devices are working."
 
