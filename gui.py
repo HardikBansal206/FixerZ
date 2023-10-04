@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget
 from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
 import scan_functions
-import mysql.connector
+import mysql.connector as mysql
 
 class FixerZApp(QMainWindow):
     def __init__(self):
@@ -39,7 +39,7 @@ class FixerZApp(QMainWindow):
             red_format = QTextCharFormat()
             red_format.setForeground(QColor("red"))
             # Replace with your database connection details
-            db_connection = mysql.connector.connect(
+            db_connection = mysql.connect(
                 host="127.0.0.1",
                 user="root",
                 password="Nikita1234@",
