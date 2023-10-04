@@ -1,3 +1,4 @@
 *.pyc
 __pycache__/
 FixerZ\__pycache__
+/__pycache__
