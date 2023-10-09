@@ -6,8 +6,6 @@ import subprocess
 import wmi
 import cv2
 import pyaudio
-import pyautogui
-import time
 
 
 def check_cpu_usage():

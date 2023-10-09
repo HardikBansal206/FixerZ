@@ -1,9 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QMessageBox
 from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPropertyAnimation
 import scan_functions
 import mysql.connector as mysql
+from docx import Document
 
 #List of error codes
 global ec
@@ -58,7 +59,7 @@ class FixerZApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FixerZ")
-        self.setGeometry(100, 100, 800, 800)
+        self.setGeometry(100, 100, 800, 830)
         self.setAutoFillBackground(True)
 
         self.central_widget = QWidget(self)
@@ -100,6 +101,14 @@ class FixerZApp(QMainWindow):
         self.progress_bar.setValue(0)
         self.progress_bar.hide()
         self.layout.addWidget(self.progress_bar)
+
+        self.export_layout = QHBoxLayout()
+        self.export = QPushButton("Export", self)
+        self.export.setStyleSheet("background-color: #0000FF; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
+        self.export.clicked.connect(self.export_to_word_file_run)
+        self.export_layout.addWidget(self.export)
+        self.layout.addLayout(self.export_layout)
+        self.export.hide()
 
         self.start()
 
@@ -330,6 +339,25 @@ class FixerZApp(QMainWindow):
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("All tests completed successfully.\n")
+        
+        self.export.show()
+
+    def export_to_word_file_run(self):
+        text = self.result_text.toPlainText()
+        if text:
+            file_path, _ = QFileDialog.getSaveFileName(self, "Save Word File", "", "Word Files (*.docx);;All Files (*)")
+            if file_path:
+                document = Document()
+                document.add_paragraph(text)
+                document.save(file_path)
+
+    # def fade_in_widget(self):
+    #     fade_animation = QPropertyAnimation(self.fade_button, b"windowOpacity")
+    #     fade_animation.setDuration(1000)
+    #     fade_animation.setStartValue(0.0)
+    #     fade_animation.setEndValue(1.0)
+    #     self.fade_button.setVisible(True)
+    #     fade_animation.start()
 
 
 if __name__ == "__main__":
