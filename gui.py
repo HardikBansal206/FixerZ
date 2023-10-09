@@ -47,7 +47,7 @@ black_format = QTextCharFormat()
 black_format.setForeground(QColor("black"))
 
 green_format = QTextCharFormat()
-green_format.setForeground(QColor("#E6F9AF"))
+green_format.setForeground(QColor("#3CB043"))
 font = QFont()
 font.setPointSize(10)
 font.setFamily("Arial")
@@ -123,18 +123,18 @@ class FixerZApp(QMainWindow):
                 self.result_text.setCurrentCharFormat(green_format)
                 self.result_text.insertPlainText("NO ISSUES FOUND")
             else:
+                cursor = db_connection.cursor()
                 for i in ec:
-                    cursor = db_connection.cursor()
-                    cursor.execute("SELECT Error_Code, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
-                    print("gvdchg")
+                    cursor.execute("SELECT Error_Detail, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
                     solutions = cursor.fetchall()
-                    self.result_text.insertPlainText("Possible Solutions:\n")
                     for solution in solutions:
                         self.result_text.setCurrentCharFormat(green_format)
-                        self.result_text.insertPlainText(f"Error Code {solution[0]}: ")
+                        self.result_text.insertPlainText(f"{solution[0]}: ")
+                        self.result_text.insertPlainText("Possible Solutions:")
                         self.result_text.insertPlainText(f"{solution[1]}\n")
-                    cursor.close()
-                    db_connection.close()
+                    self.result_text.insertPlainText("\n")
+                cursor.close()
+                db_connection.close()
 
         except Exception as e:
             self.result_text.clear()
@@ -175,6 +175,7 @@ class FixerZApp(QMainWindow):
         completed_tests = 0
 
         self.progress_bar.show()
+        self.solutions_button.hide()
         self.result_text.setMinimumHeight(500)
         self.update_progress(0)  # Initialize the progress bar
         QApplication.processEvents()  # Force the GUI to update
