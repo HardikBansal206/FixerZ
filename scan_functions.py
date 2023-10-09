@@ -6,6 +6,8 @@ import subprocess
 import wmi
 import cv2
 import pyaudio
+import pyautogui
+import time
 
 
 def check_cpu_usage():
@@ -24,15 +26,15 @@ def check_ram_usage():
 
 def check_disk_usage():
     partitions = psutil.disk_partitions()
-    disk_status = ""
+    high_usage_disks = []
     for partition in partitions:
         usage = psutil.disk_usage(partition.mountpoint)
         if usage.percent >= 80:
-            disk_status += f"High disk usage on {partition.device}: {usage.percent}%\n"
-    if disk_status:
-        return disk_status
+            high_usage_disks.append(f"High disk usage on {partition.device}: {usage.percent}%")
+    if high_usage_disks:
+        return high_usage_disks
     else:
-        return "Disk usage is normal."
+        return ["Disk usage is normal."]
 
 def check_network_status():
     try:
@@ -144,3 +146,22 @@ def check_microphone():
         return "Microphone is not working."
     except Exception as e:
         return f"Microphone error: {str(e)}"
+
+# def check_input_devices():
+#     try:
+#         # Check mouse movement with a timeout
+#         max_retries = 5  # Adjust the number of retries as needed
+#         for _ in range(max_retries):
+#             try:
+#                 pyautogui.move(10, 10, duration=0.5)
+#                 pyautogui.move(-10, -10, duration=0.5)
+#                 break  # Exit the loop if successful
+#             except Exception as e:
+#                 time.sleep(1)  # Wait for a moment before retrying
+
+#         # Check keyboard input
+#         pyautogui.write("Test Keyboard Input", interval=0.1)
+
+#         return "Mouse and keyboard are working fine."
+#     except Exception as e:
+#         return f"Error checking input devices: {e}"
