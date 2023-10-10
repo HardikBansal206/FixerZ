@@ -192,6 +192,7 @@ class FixerZApp(QMainWindow):
         self.result_text.clear()
         self.specs_text.clear()
         self.start()
+        self.export.hide()
 
         total_tests = 7
         completed_tests = 0
