@@ -141,14 +141,16 @@ class FixerZApp(QMainWindow):
                         self.result_text.setCurrentCharFormat(green_format)
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
+                        error = solution[1]
                         self.result_text.insertPlainText(f"{solution[1]}\n")
                         view_more_button = QPushButton("View More", self)
-                    view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
-                    view_more_button.clicked.connect(lambda checked, desc=solution[0]: self.view_more_clicked(desc))
-                    self.layout.addWidget(view_more_button)
-                self.result_text.insertPlainText("\n")
-            cursor.close()
-            db_connection.close()
+                        view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
+                        view_more_button.clicked.connect(lambda: self.view_more_clicked(error))
+
+                        self.layout.addWidget(view_more_button)
+                    self.result_text.insertPlainText("\n")
+                cursor.close()
+                db_connection.close()
 
         except Exception as e:
             self.result_text.clear()
@@ -157,7 +159,6 @@ class FixerZApp(QMainWindow):
 
     def view_more_clicked(self, error_description):
         self.search_error_solution(error_description)
-        QMessageBox.information(self, "View More Clicked", "You clicked the 'View More' button.")
 
     def start(self):  
         # get system specs
@@ -309,7 +310,7 @@ class FixerZApp(QMainWindow):
         # DISK TEST RESULT
         if "Disk usage is normal." in disk_result:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+            self.result_text.insertPlainText("Disk Status: " + str(disk_result) + "\n")
         else:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Disk Status:")
