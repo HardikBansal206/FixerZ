@@ -142,10 +142,10 @@ class FixerZApp(QMainWindow):
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
                         self.result_text.insertPlainText(f"{solution[1]}\n")
-                        view_more_button = QPushButton("View More", self)
-                    view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
-                    view_more_button.clicked.connect(lambda checked, desc=solution[0]: self.view_more_clicked(desc))
-                    self.layout.addWidget(view_more_button)
+                        # view_more_button = QPushButton("View More", self)
+                        # view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
+                        # view_more_button.clicked.connect(lambda checked, desc=solution[0]: self.view_more_clicked(desc))
+                        # self.layout.addWidget(view_more_button)
                 self.result_text.insertPlainText("\n")
             cursor.close()
             db_connection.close()
@@ -155,9 +155,9 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
 
-    def view_more_clicked(self, error_description):
-        self.search_error_solution(error_description)
-        QMessageBox.information(self, "View More Clicked", "You clicked the 'View More' button.")
+    # def view_more_clicked(self, error_description):
+    #     self.search_error_solution(error_description)
+    #     QMessageBox.information(self, "View More Clicked", "You clicked the 'View More' button.")
 
     def start(self):  
         # get system specs
@@ -183,16 +183,15 @@ class FixerZApp(QMainWindow):
         self.specs_text.insertPlainText("System Load:\t\t" + load_result + "\n")
         self.specs_text.insertPlainText("Battery Status:\t\t" + battery_result + "\n")
 
-    def search_error_solution(error_description):
-        search_query = f"Step wise solution for troubleshooting {error_description}"
-        webbrowser.open_new_tab("https://www.google.com/search?q=" + search_query)
+    # def search_error_solution(error_description):
+    #     search_query = f"Step wise solution for troubleshooting {error_description}"
+    #     webbrowser.open_new_tab("https://www.google.com/search?q=" + search_query)
 
     def run_scan(self):
         ec.clear()
         self.result_text.clear()
         self.specs_text.clear()
         self.start()
-        self.export.hide()
 
         total_tests = 7
         completed_tests = 0
