@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, QPropertyAnimation
 import scan_functions
 import mysql.connector as mysql
 from docx import Document
+import webbrowser
 
 #List of error codes
 global ec
@@ -111,7 +112,7 @@ class FixerZApp(QMainWindow):
         self.export.hide()
 
         self.start()
-
+    
     def update_progress(self, value):
         self.progress_bar.setValue(int(value))
         QApplication.processEvents()  
@@ -141,14 +142,22 @@ class FixerZApp(QMainWindow):
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
                         self.result_text.insertPlainText(f"{solution[1]}\n")
-                    self.result_text.insertPlainText("\n")
-                cursor.close()
-                db_connection.close()
+                        view_more_button = QPushButton("View More", self)
+                    view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
+                    view_more_button.clicked.connect(lambda checked, desc=solution[0]: self.view_more_clicked(desc))
+                    self.layout.addWidget(view_more_button)
+                self.result_text.insertPlainText("\n")
+            cursor.close()
+            db_connection.close()
 
         except Exception as e:
             self.result_text.clear()
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
+
+    def view_more_clicked(self, error_description):
+        self.search_error_solution(error_description)
+        QMessageBox.information(self, "View More Clicked", "You clicked the 'View More' button.")
 
     def start(self):  
         # get system specs
@@ -173,6 +182,10 @@ class FixerZApp(QMainWindow):
         self.specs_text.insertPlainText("System Version:\t\t" + version_result + "\n")
         self.specs_text.insertPlainText("System Load:\t\t" + load_result + "\n")
         self.specs_text.insertPlainText("Battery Status:\t\t" + battery_result + "\n")
+
+    def search_error_solution(error_description):
+        search_query = f"Step wise solution for troubleshooting {error_description}"
+        webbrowser.open_new_tab("https://www.google.com/search?q=" + search_query)
 
     def run_scan(self):
         ec.clear()
@@ -358,7 +371,6 @@ class FixerZApp(QMainWindow):
     #     fade_animation.setEndValue(1.0)
     #     self.fade_button.setVisible(True)
     #     fade_animation.start()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
