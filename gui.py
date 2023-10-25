@@ -63,7 +63,7 @@ class FixerZApp(QMainWindow):
         initial_width = 1200
         initial_height = int((initial_width * 9) / 16)
         self.setGeometry(100, 100, initial_width, initial_height)
-        self.setFixedSize(initial_width, initial_height)
+        # self.setFixedSize(initial_width, initial_height)
         self.setStyleSheet("background-color: #0f1d30;")
 
         self.central_widget = QWidget(self)
@@ -92,14 +92,14 @@ class FixerZApp(QMainWindow):
         self.navigation_container = QWidget()
         self.navigation_layout = QVBoxLayout()
         self.navigation_container.setLayout(self.navigation_layout)
-        self.navigation_container.setStyleSheet("background-color: #202d3c; border: none; border-radius: 20px;")
+        self.navigation_container.setStyleSheet("background-color: #2a2854; border: none; border-radius: 20px;")
         self.navigation_layout.setAlignment(Qt.AlignTop)
         self.navigation_container.setContentsMargins(0, 0, 0, 0)
 
             # Scan / Test Mode Button
         scan_icon = QIcon("images/test.png")
         self.scan_button = QPushButton()
-        self.scan_button.setFixedSize(30, int(0.1 * screen_height))
+        self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
         self.scan_button.setIconSize(self.scan_button.size())
         self.scan_button.setStyleSheet("background-color: transparent; border: none;")
@@ -108,8 +108,9 @@ class FixerZApp(QMainWindow):
             # Solutions Button
         solutions_icon = QIcon("images/solutions.png")
         self.solutions_button = QPushButton()
-        self.solutions_button.setFixedSize(50, int(0.1 * screen_height))
+        self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
         self.solutions_button.setIcon(solutions_icon)
+        self.solutions_button.setIconSize(self.solutions_button.size())
         self.solutions_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
         self.solutions_button.clicked.connect(self.fetch_possible_solutions)
 
@@ -124,14 +125,17 @@ class FixerZApp(QMainWindow):
         self.welcome_text.setStyleSheet("background-color: transparent; border: none;")
         self.welcome_text.setReadOnly(True)
         self.welcome_text.setFixedWidth(int(0.66 * screen_width))
+        self.welcome_text.setFixedHeight(int(0.03 * screen_height))
         self.welcome_text.setContentsMargins(10, 10, 10, 10)
         user_name = "User"  # Replace with the actual user's name
         self.welcome_text.setCurrentCharFormat(heading)
         self.welcome_text.setText(f"Welcome {user_name}")
+        self.welcome_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-            # Result Text and Progress Bar
+            # Tests Section and Progress Bar
+        self.test_results_container = QWidget()
         self.result_text = QTextEdit()
-        self.result_text.setStyleSheet("background-color: #111111; color: white;border: none;")
+        self.result_text.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
         self.result_text.setReadOnly(True)
         self.result_text.setFixedSize(int(0.66 * screen_width), int(0.44 * screen_height))
         self.result_text.setContentsMargins(10, 10, 10, 10)
@@ -210,7 +214,6 @@ class FixerZApp(QMainWindow):
                         self.result_text.setCurrentCharFormat(green_format)
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
-                        error = solution[1]
                         self.result_text.insertPlainText(f"{solution[1]}\n")
                         # view_more_button = QPushButton("View More", self)
                         # view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
@@ -377,7 +380,7 @@ class FixerZApp(QMainWindow):
         # DISK TEST RESULT
         if "Disk usage is normal." in disk_result:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: " + str(disk_result) + "\n")
+            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
         else:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Disk Status:")
