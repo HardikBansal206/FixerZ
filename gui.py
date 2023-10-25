@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QMessageBox, QLabel
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont, QPixmap, QRadialGradient, QPalette, QIcon, QCursor
-from PyQt5.QtCore import Qt, QPropertyAnimation, QSize
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QLabel
+from PyQt5.QtGui import QTextCharFormat, QColor, QFont, QPixmap, QIcon, QCursor
+from PyQt5.QtCore import Qt, QSize
 import scan_functions
 import mysql.connector as mysql
 from docx import Document
@@ -628,6 +628,9 @@ class FixerZApp(QMainWindow):
         self.specs_container.show()
 
     def fetch_possible_solutions(self):
+        self.specs_container.hide()
+        self.test_results_container.hide()
+        self.result_text.show()
         try:
             self.result_text.clear()
             self.specs_text.clear()
@@ -720,6 +723,9 @@ class FixerZApp(QMainWindow):
     #     webbrowser.open_new_tab("https://www.google.com/search?q=" + search_query)
 
     def run_scan(self):
+        self.specs_container.show()
+        self.test_results_container.show()
+        self.result_text.hide()
         ec.clear()
         self.result_text.clear()
         self.specs_text.clear()
