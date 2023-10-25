@@ -21,6 +21,14 @@ font.setFamily("Poppins")
 font.setBold(True)
 heading.setFont(font)
 
+heading2 = QTextCharFormat()
+heading2.setForeground(QColor("white"))
+font = QFont()
+font.setPointSize(14)
+font.setFamily("Poppins")
+font.setBold(True)
+heading2.setFont(font)
+
 sub_heading = QTextCharFormat()
 sub_heading.setForeground(QColor("#e9ecef"))
 font = QFont()
@@ -154,24 +162,24 @@ class FixerZApp(QMainWindow):
         self.test_results_container.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
         self.test_results_container.setLayout(QHBoxLayout())
         self.test_results_container.setContentsMargins(10, 10, 10, 10)
-        self.test_results_container.setFixedSize(int(0.66 * screen_width), int(0.44 * screen_height))
+        self.test_results_container.setFixedSize(int(0.66 * screen_width), int(0.38 * screen_height))
                 #section 1
         self.section1_container = QWidget()
         self.section1_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
         self.section1_container.setLayout(QVBoxLayout())
         self.section1_container.setContentsMargins(10, 10, 10, 10)
-        self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+        self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
                     #section 1 text
         self.section1_text1 = QTextEdit()
         self.section1_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section1_text1.setReadOnly(True)
-        self.section1_text1.setFixedWidth(int(0.15 * screen_width))
         self.section1_text1.setFixedHeight(int(0.1 * screen_height))
         self.section1_text1.setContentsMargins(10, 10, 10, 10)
         self.section1_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.section1_text1.setCurrentCharFormat(heading)
         self.section1_text1.setPlainText("Hardware Scans")
         self.section1_text1.setAlignment(Qt.AlignCenter)
+        self.section1_text1.setAlignment(Qt.AlignVCenter)
                     #section 1 image
         self.section1_image = QLabel()
         self.section1_image.setPixmap(QPixmap("images/hardware.png"))
@@ -180,7 +188,7 @@ class FixerZApp(QMainWindow):
         self.section1_result = QTextEdit()
         self.section1_result.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section1_result.setReadOnly(True)
-        self.section1_result.setFixedWidth(int(0.15 * screen_width))
+        self.section1_result.setAlignment(Qt.AlignCenter)
                     #Addition to section 1 container
         self.section1_container.layout().addWidget(self.section1_text1)
         self.section1_container.layout().addWidget(self.section1_image)
@@ -191,18 +199,17 @@ class FixerZApp(QMainWindow):
         self.section2_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
         self.section2_container.setLayout(QVBoxLayout())
         self.section2_container.setContentsMargins(10, 10, 10, 10)
-        self.section2_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+        self.section2_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
                     #section 2 text
         self.section2_text1 = QTextEdit()
         self.section2_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section2_text1.setReadOnly(True)
-        self.section2_text1.setFixedWidth(int(0.15 * screen_width))
         self.section2_text1.setFixedHeight(int(0.1 * screen_height))
         self.section2_text1.setContentsMargins(10, 10, 10, 10)
         self.section2_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.section2_text1.setCurrentCharFormat(heading)
         self.section2_text1.setPlainText("Network Scans")
-        self.section2_text1.setAlignment(Qt.AlignCenter)
+        self.section2_text1.setAlignment(Qt.AlignCenter) 
                     #section 2 image
         self.section2_image = QLabel()
         self.section2_image.setPixmap(QPixmap("images/network.png"))
@@ -211,7 +218,7 @@ class FixerZApp(QMainWindow):
         self.section2_result = QTextEdit()
         self.section2_result.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section2_result.setReadOnly(True)
-        self.section2_result.setFixedWidth(int(0.15 * screen_width))
+        self.section2_result.setAlignment(Qt.AlignCenter)
                     #Addition to section 2 container
         self.section2_container.layout().addWidget(self.section2_text1)
         self.section2_container.layout().addWidget(self.section2_image)
@@ -222,12 +229,11 @@ class FixerZApp(QMainWindow):
         self.section3_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
         self.section3_container.setLayout(QVBoxLayout())
         self.section3_container.setContentsMargins(10, 10, 10, 10)
-        self.section3_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+        self.section3_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
                     #section 3 text
         self.section3_text1 = QTextEdit()
         self.section3_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section3_text1.setReadOnly(True)
-        self.section3_text1.setFixedWidth(int(0.15 * screen_width))
         self.section3_text1.setFixedHeight(int(0.1 * screen_height))
         self.section3_text1.setContentsMargins(10, 10, 10, 10)
         self.section3_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -242,7 +248,7 @@ class FixerZApp(QMainWindow):
         self.section3_result = QTextEdit()
         self.section3_result.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section3_result.setReadOnly(True)
-        self.section3_result.setFixedWidth(int(0.15 * screen_width))
+        self.section3_result.setAlignment(Qt.AlignCenter)
                     #Addition to section 3 container
         self.section3_container.layout().addWidget(self.section3_text1)
         self.section3_container.layout().addWidget(self.section3_image)
@@ -253,12 +259,11 @@ class FixerZApp(QMainWindow):
         self.section4_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
         self.section4_container.setLayout(QVBoxLayout())
         self.section4_container.setContentsMargins(10, 10, 10, 10)
-        self.section4_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+        self.section4_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
                     #section 4 text
         self.section4_text1 = QTextEdit()
         self.section4_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section4_text1.setReadOnly(True)
-        self.section4_text1.setFixedWidth(int(0.15 * screen_width))
         self.section4_text1.setFixedHeight(int(0.1 * screen_height))
         self.section4_text1.setContentsMargins(10, 10, 10, 10)
         self.section4_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -273,7 +278,8 @@ class FixerZApp(QMainWindow):
         self.section4_result = QTextEdit()
         self.section4_result.setStyleSheet("background-color: transparent; color: white;border: none;")
         self.section4_result.setReadOnly(True)
-        self.section4_result.setFixedWidth(int(0.15 * screen_width))
+        self.section4_result.setAlignment(Qt.AlignCenter)
+        self.section4_result.setAlignment(Qt.AlignVCenter)
                     #Addition to section 4 container
         self.section4_container.layout().addWidget(self.section4_text1)
         self.section4_container.layout().addWidget(self.section4_image)
@@ -287,7 +293,7 @@ class FixerZApp(QMainWindow):
         self.test_results_container.layout().addWidget(self.section4_container)
 
 
-            # Result Text
+            # Old Result Text
         self.result_text = QTextEdit()
         self.result_text.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
         self.result_text.setReadOnly(True)
@@ -300,6 +306,187 @@ class FixerZApp(QMainWindow):
         self.progress_bar.hide()
 
             # Specs Text
+        self.specs_container = QWidget()
+        self.specs_container.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
+        self.specs_container.setLayout(QVBoxLayout())
+        self.specs_container.setFixedSize(int(0.66 * screen_width), int(0.28 * screen_height))
+                #Heading
+        self.specs_heading = QTextEdit()
+        self.specs_heading.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_heading.setReadOnly(True)
+        self.specs_heading.setFixedWidth(int(0.66 * screen_width))
+        self.specs_heading.setFixedHeight(int(0.03 * screen_height))
+        self.specs_heading.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_heading.setCurrentCharFormat(heading2)
+        self.specs_heading.setPlainText("Basic System Details")
+        self.specs_heading.setAlignment(Qt.AlignCenter)
+                    #Container2
+        self.specs_container2 = QWidget()
+        self.specs_container2.setStyleSheet("background-color: transparent; color: white;border: none; border-radius: 20px;")
+        self.specs_container2.setLayout(QHBoxLayout())
+        self.specs_container2.setFixedSize(int(0.66 * screen_width), int(0.26 * screen_height))
+                        #Section 1
+        self.specs_section1 = QWidget()
+        self.specs_section1.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.specs_section1.setLayout(QVBoxLayout())
+        self.specs_section1.setContentsMargins(10, 10, 10, 10)
+        self.specs_section1.setFixedSize(int(0.11 * screen_width), int(0.24 * screen_height))
+                            #Section 1 Text
+        self.specs_section1_text = QTextEdit()
+        self.specs_section1_text.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section1_text.setReadOnly(True)
+        self.specs_section1_text.setFixedHeight(int(0.1 * screen_height))
+        self.specs_section1_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_section1_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_section1_text.setCurrentCharFormat(heading2)
+        self.specs_section1_text.setPlainText("Processor")
+        self.specs_section1_text.setAlignment(Qt.AlignCenter)
+                            #Section 1 Image
+        self.specs_section1_image = QLabel()
+        self.specs_section1_image.setPixmap(QPixmap("images/processor.png"))
+        self.specs_section1_image.setAlignment(Qt.AlignCenter)
+                            #Section 1 Result
+        self.specs_section1_result = QTextEdit()
+        self.specs_section1_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section1_result.setReadOnly(True)
+        self.specs_section1_result.setAlignment(Qt.AlignCenter)
+                            #Addition to section 1 container
+        self.specs_section1.layout().addWidget(self.specs_section1_text)
+        self.specs_section1.layout().addWidget(self.specs_section1_image)
+        self.specs_section1.layout().addWidget(self.specs_section1_result)
+                        #Section 2
+        self.specs_section2 = QWidget()
+        self.specs_section2.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.specs_section2.setLayout(QVBoxLayout())
+        self.specs_section2.setContentsMargins(10, 10, 10, 10)
+        self.specs_section2.setFixedSize(int(0.11 * screen_width), int(0.24 * screen_height))
+                            #Section 2 Text
+        self.specs_section2_text = QTextEdit()
+        self.specs_section2_text.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section2_text.setReadOnly(True)
+        self.specs_section2_text.setFixedHeight(int(0.1 * screen_height))
+        self.specs_section2_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_section2_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_section2_text.setCurrentCharFormat(heading2)
+        self.specs_section2_text.setPlainText("RAM")
+        self.specs_section2_text.setAlignment(Qt.AlignCenter)
+                            #Section 2 Image
+        self.specs_section2_image = QLabel()
+        self.specs_section2_image.setPixmap(QPixmap("images/ram.png"))
+        self.specs_section2_image.setAlignment(Qt.AlignCenter)
+                            #Section 2 Result
+        self.specs_section2_result = QTextEdit()
+        self.specs_section2_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section2_result.setReadOnly(True)
+        self.specs_section2_result.setAlignment(Qt.AlignCenter)
+                            #Addition to section 2 container
+        self.specs_section2.layout().addWidget(self.specs_section2_text)
+        self.specs_section2.layout().addWidget(self.specs_section2_image)
+        self.specs_section2.layout().addWidget(self.specs_section2_result)
+                        
+                        #Section 3
+        self.specs_section3 = QWidget()
+        self.specs_section3.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.specs_section3.setLayout(QVBoxLayout())
+        self.specs_section3.setContentsMargins(10, 10, 10, 10)
+        self.specs_section3.setFixedSize(int(0.11 * screen_width), int(0.24 * screen_height))
+                            #Section 3 Text
+        self.specs_section3_text = QTextEdit()
+        self.specs_section3_text.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section3_text.setReadOnly(True)
+        self.specs_section3_text.setFixedHeight(int(0.1 * screen_height))
+        self.specs_section3_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_section3_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_section3_text.setCurrentCharFormat(heading2)
+        self.specs_section3_text.setPlainText("Display")
+        self.specs_section3_text.setAlignment(Qt.AlignCenter)
+                            #Section 3 Image
+        self.specs_section3_image = QLabel()
+        self.specs_section3_image.setPixmap(QPixmap("images/display.png"))
+        self.specs_section3_image.setFixedHeight(int(0.08 * screen_height))
+        self.specs_section3_image.setAlignment(Qt.AlignCenter)
+                            #Section 3 Result
+        self.specs_section3_result = QTextEdit()
+        self.specs_section3_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section3_result.setReadOnly(True)
+        self.specs_section3_result.setAlignment(Qt.AlignCenter)
+                            #Addition to section 3 container
+        self.specs_section3.layout().addWidget(self.specs_section3_text)
+        self.specs_section3.layout().addWidget(self.specs_section3_image)
+        self.specs_section3.layout().addWidget(self.specs_section3_result)
+
+                        #Section 4
+        self.specs_section4 = QWidget()
+        self.specs_section4.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.specs_section4.setLayout(QVBoxLayout())
+        self.specs_section4.setContentsMargins(10, 10, 10, 10)
+        self.specs_section4.setFixedSize(int(0.11 * screen_width), int(0.24 * screen_height))
+                            #Section 4 Text 
+        self.specs_section4_text = QTextEdit()
+        self.specs_section4_text.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section4_text.setReadOnly(True)
+        self.specs_section4_text.setFixedHeight(int(0.1 * screen_height))
+        self.specs_section4_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_section4_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_section4_text.setCurrentCharFormat(heading2)
+        self.specs_section4_text.setPlainText("GPU")
+        self.specs_section4_text.setAlignment(Qt.AlignCenter)
+                            #Section 4 Image
+        self.specs_section4_image = QLabel()
+        self.specs_section4_image.setPixmap(QPixmap("images/gpu.png"))
+        self.specs_section4_image.setAlignment(Qt.AlignCenter)
+                            #Section 4 Result
+        self.specs_section4_result = QTextEdit()
+        self.specs_section4_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section4_result.setReadOnly(True)
+        self.specs_section4_result.setAlignment(Qt.AlignCenter)
+                            #Addition to section 4 container
+        self.specs_section4.layout().addWidget(self.specs_section4_text)
+        self.specs_section4.layout().addWidget(self.specs_section4_image)
+        self.specs_section4.layout().addWidget(self.specs_section4_result)
+
+                        #Section 5
+        self.specs_section5 = QWidget()
+        self.specs_section5.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.specs_section5.setLayout(QVBoxLayout())
+        self.specs_section5.setContentsMargins(10, 10, 10, 10)
+        self.specs_section5.setFixedSize(int(0.11 * screen_width), int(0.24 * screen_height))
+                            #Section 5 Text
+        self.specs_section5_text = QTextEdit()
+        self.specs_section5_text.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section5_text.setReadOnly(True)
+        self.specs_section5_text.setFixedHeight(int(0.1 * screen_height))
+        self.specs_section5_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_section5_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.specs_section5_text.setCurrentCharFormat(heading2)
+        self.specs_section5_text.setPlainText("Storage")
+        self.specs_section5_text.setAlignment(Qt.AlignCenter)
+                            #Section 5 Image
+        self.specs_section5_image = QLabel()
+        self.specs_section5_image.setPixmap(QPixmap("images/storage.png"))
+        self.specs_section5_image.setAlignment(Qt.AlignCenter)
+                            #Section 5 Result
+        self.specs_section5_result = QTextEdit()
+        self.specs_section5_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.specs_section5_result.setReadOnly(True)
+        self.specs_section5_result.setAlignment(Qt.AlignCenter)
+                            #Addition to section 5 container
+        self.specs_section5.layout().addWidget(self.specs_section5_text)
+        self.specs_section5.layout().addWidget(self.specs_section5_image)
+        self.specs_section5.layout().addWidget(self.specs_section5_result)
+
+
+                    #Addition to container 2
+        self.specs_container2.layout().addWidget(self.specs_section1)
+        self.specs_container2.layout().addWidget(self.specs_section2)
+        self.specs_container2.layout().addWidget(self.specs_section3)
+        self.specs_container2.layout().addWidget(self.specs_section4)
+        self.specs_container2.layout().addWidget(self.specs_section5)
+                    #Addition to container
+        self.specs_container.layout().addWidget(self.specs_container2)
+
+
+
         self.specs_text = QTextEdit()
         self.specs_text.setStyleSheet("background-color: #353652;border: none; border-radius: 20px;")
         self.specs_text.setReadOnly(True)
@@ -311,7 +498,7 @@ class FixerZApp(QMainWindow):
         self.info_layout.addWidget(self.welcome_text)
         self.info_layout.addWidget(self.test_results_container)
         self.info_layout.addWidget(self.progress_bar)
-        self.info_layout.addWidget(self.specs_text)
+        self.info_layout.addWidget(self.specs_container)
         
         # Quick Actions Column
         self.quick_actions_layout = QVBoxLayout()
@@ -634,13 +821,8 @@ class FixerZApp(QMainWindow):
                 document.add_paragraph(text)
                 document.save(file_path)
 
-    # def fade_in_widget(self):
-    #     fade_animation = QPropertyAnimation(self.fade_button, b"windowOpacity")
-    #     fade_animation.setDuration(1000)
-    #     fade_animation.setStartValue(0.0)
-    #     fade_animation.setEndValue(1.0)
-    #     self.fade_button.setVisible(True)
-    #     fade_animation.start()
+    def show_specs(self):
+        print()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
