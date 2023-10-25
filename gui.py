@@ -16,8 +16,8 @@ ec = []
 heading = QTextCharFormat()
 heading.setForeground(QColor("white"))
 font = QFont()
-font.setPointSize(14)
-font.setFamily("Arial")
+font.setPointSize(16)
+font.setFamily("Poppins")
 font.setBold(True)
 heading.setFont(font)
 
@@ -25,7 +25,7 @@ sub_heading = QTextCharFormat()
 sub_heading.setForeground(QColor("#e9ecef"))
 font = QFont()
 font.setPointSize(10)
-font.setFamily("Arial")
+font.setFamily("Poppins")
 font.setBold(False)
 sub_heading.setFont(font)
 
@@ -33,7 +33,7 @@ blue_format = QTextCharFormat()
 blue_format.setForeground(QColor("#A3E7FC"))
 font = QFont()
 font.setPointSize(10)
-font.setFamily("Arial")
+font.setFamily("Poppins")
 font.setBold(False)
 blue_format.setFont(font)
 
@@ -41,7 +41,7 @@ red_format = QTextCharFormat()
 red_format.setForeground(QColor("#ED254E"))
 font = QFont()
 font.setPointSize(10)
-font.setFamily("Arial")
+font.setFamily("Poppins")
 font.setBold(False)
 red_format.setFont(font)
 
@@ -52,9 +52,26 @@ green_format = QTextCharFormat()
 green_format.setForeground(QColor("#3CB043"))
 font = QFont()
 font.setPointSize(10)
-font.setFamily("Arial")
+font.setFamily("Poppins")
 font.setBold(False)
 green_format.setFont(font)
+
+result_text_good = QTextCharFormat()
+result_text_good.setForeground(QColor("#3CB043"))
+font = QFont()
+font.setPointSize(12)
+font.setFamily("Poppins")
+font.setBold(False)
+result_text_good.setFont(font)
+
+result_text_bad = QTextCharFormat()
+result_text_bad.setForeground(QColor("#ED254E"))
+font = QFont()
+font.setPointSize(12)
+font.setFamily("Poppins")
+font.setBold(False)
+result_text_bad.setFont(font)
+
 
 class FixerZApp(QMainWindow):
     def __init__(self):
@@ -125,7 +142,7 @@ class FixerZApp(QMainWindow):
         self.welcome_text.setStyleSheet("background-color: transparent; border: none;")
         self.welcome_text.setReadOnly(True)
         self.welcome_text.setFixedWidth(int(0.66 * screen_width))
-        self.welcome_text.setFixedHeight(int(0.03 * screen_height))
+        self.welcome_text.setFixedHeight(int(0.05 * screen_height))
         self.welcome_text.setContentsMargins(10, 10, 10, 10)
         user_name = "User"  # Replace with the actual user's name
         self.welcome_text.setCurrentCharFormat(heading)
@@ -134,6 +151,143 @@ class FixerZApp(QMainWindow):
 
             # Tests Section and Progress Bar
         self.test_results_container = QWidget()
+        self.test_results_container.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
+        self.test_results_container.setLayout(QHBoxLayout())
+        self.test_results_container.setContentsMargins(10, 10, 10, 10)
+        self.test_results_container.setFixedSize(int(0.66 * screen_width), int(0.44 * screen_height))
+                #section 1
+        self.section1_container = QWidget()
+        self.section1_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.section1_container.setLayout(QVBoxLayout())
+        self.section1_container.setContentsMargins(10, 10, 10, 10)
+        self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+                    #section 1 text
+        self.section1_text1 = QTextEdit()
+        self.section1_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section1_text1.setReadOnly(True)
+        self.section1_text1.setFixedWidth(int(0.15 * screen_width))
+        self.section1_text1.setFixedHeight(int(0.1 * screen_height))
+        self.section1_text1.setContentsMargins(10, 10, 10, 10)
+        self.section1_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.section1_text1.setCurrentCharFormat(heading)
+        self.section1_text1.setPlainText("Hardware Scans")
+        self.section1_text1.setAlignment(Qt.AlignCenter)
+                    #section 1 image
+        self.section1_image = QLabel()
+        self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+        self.section1_image.setAlignment(Qt.AlignCenter)
+                    #section 1 result
+        self.section1_result = QTextEdit()
+        self.section1_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section1_result.setReadOnly(True)
+        self.section1_result.setFixedWidth(int(0.15 * screen_width))
+                    #Addition to section 1 container
+        self.section1_container.layout().addWidget(self.section1_text1)
+        self.section1_container.layout().addWidget(self.section1_image)
+        self.section1_container.layout().addWidget(self.section1_result)
+                
+                #section 2
+        self.section2_container = QWidget()
+        self.section2_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.section2_container.setLayout(QVBoxLayout())
+        self.section2_container.setContentsMargins(10, 10, 10, 10)
+        self.section2_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+                    #section 2 text
+        self.section2_text1 = QTextEdit()
+        self.section2_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section2_text1.setReadOnly(True)
+        self.section2_text1.setFixedWidth(int(0.15 * screen_width))
+        self.section2_text1.setFixedHeight(int(0.1 * screen_height))
+        self.section2_text1.setContentsMargins(10, 10, 10, 10)
+        self.section2_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.section2_text1.setCurrentCharFormat(heading)
+        self.section2_text1.setPlainText("Network Scans")
+        self.section2_text1.setAlignment(Qt.AlignCenter)
+                    #section 2 image
+        self.section2_image = QLabel()
+        self.section2_image.setPixmap(QPixmap("images/network.png"))
+        self.section2_image.setAlignment(Qt.AlignCenter)
+                    #section 2 result
+        self.section2_result = QTextEdit()
+        self.section2_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section2_result.setReadOnly(True)
+        self.section2_result.setFixedWidth(int(0.15 * screen_width))
+                    #Addition to section 2 container
+        self.section2_container.layout().addWidget(self.section2_text1)
+        self.section2_container.layout().addWidget(self.section2_image)
+        self.section2_container.layout().addWidget(self.section2_result)        
+
+                #section 3
+        self.section3_container = QWidget()
+        self.section3_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.section3_container.setLayout(QVBoxLayout())
+        self.section3_container.setContentsMargins(10, 10, 10, 10)
+        self.section3_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+                    #section 3 text
+        self.section3_text1 = QTextEdit()
+        self.section3_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section3_text1.setReadOnly(True)
+        self.section3_text1.setFixedWidth(int(0.15 * screen_width))
+        self.section3_text1.setFixedHeight(int(0.1 * screen_height))
+        self.section3_text1.setContentsMargins(10, 10, 10, 10)
+        self.section3_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.section3_text1.setCurrentCharFormat(heading)
+        self.section3_text1.setPlainText("Memory Scans")
+        self.section3_text1.setAlignment(Qt.AlignCenter)
+                    #section 3 image
+        self.section3_image = QLabel()
+        self.section3_image.setPixmap(QPixmap("images/memory.png"))
+        self.section3_image.setAlignment(Qt.AlignCenter)
+                    #section 3 result
+        self.section3_result = QTextEdit()
+        self.section3_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section3_result.setReadOnly(True)
+        self.section3_result.setFixedWidth(int(0.15 * screen_width))
+                    #Addition to section 3 container
+        self.section3_container.layout().addWidget(self.section3_text1)
+        self.section3_container.layout().addWidget(self.section3_image)
+        self.section3_container.layout().addWidget(self.section3_result)
+
+            #section 4
+        self.section4_container = QWidget()
+        self.section4_container.setStyleSheet("background-color: #454562; color: white;border: none; border-radius: 20px;")
+        self.section4_container.setLayout(QVBoxLayout())
+        self.section4_container.setContentsMargins(10, 10, 10, 10)
+        self.section4_container.setFixedSize(int(0.15 * screen_width), int(0.4 * screen_height))
+                    #section 4 text
+        self.section4_text1 = QTextEdit()
+        self.section4_text1.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section4_text1.setReadOnly(True)
+        self.section4_text1.setFixedWidth(int(0.15 * screen_width))
+        self.section4_text1.setFixedHeight(int(0.1 * screen_height))
+        self.section4_text1.setContentsMargins(10, 10, 10, 10)
+        self.section4_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.section4_text1.setCurrentCharFormat(heading)
+        self.section4_text1.setPlainText("CPU Scans")
+        self.section4_text1.setAlignment(Qt.AlignCenter)
+                    #section 4 image
+        self.section4_image = QLabel()
+        self.section4_image.setPixmap(QPixmap("images/CPU.png"))
+        self.section4_image.setAlignment(Qt.AlignCenter)
+                    #section 4 result
+        self.section4_result = QTextEdit()
+        self.section4_result.setStyleSheet("background-color: transparent; color: white;border: none;")
+        self.section4_result.setReadOnly(True)
+        self.section4_result.setFixedWidth(int(0.15 * screen_width))
+                    #Addition to section 4 container
+        self.section4_container.layout().addWidget(self.section4_text1)
+        self.section4_container.layout().addWidget(self.section4_image)
+        self.section4_container.layout().addWidget(self.section4_result)
+
+
+            #Addition of all sections to test results container
+        self.test_results_container.layout().addWidget(self.section1_container)
+        self.test_results_container.layout().addWidget(self.section2_container)
+        self.test_results_container.layout().addWidget(self.section3_container)
+        self.test_results_container.layout().addWidget(self.section4_container)
+
+
+            # Result Text
         self.result_text = QTextEdit()
         self.result_text.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
         self.result_text.setReadOnly(True)
@@ -147,7 +301,7 @@ class FixerZApp(QMainWindow):
 
             # Specs Text
         self.specs_text = QTextEdit()
-        self.specs_text.setStyleSheet("background-color: #0D0630;border: none;")
+        self.specs_text.setStyleSheet("background-color: #353652;border: none; border-radius: 20px;")
         self.specs_text.setReadOnly(True)
         self.specs_text.setFixedSize(int(0.66 * screen_width), int(0.31 * screen_height))
         self.specs_text.setContentsMargins(10, 10, 10, 10)
@@ -155,7 +309,7 @@ class FixerZApp(QMainWindow):
         
             # Add to the info layout
         self.info_layout.addWidget(self.welcome_text)
-        self.info_layout.addWidget(self.result_text)
+        self.info_layout.addWidget(self.test_results_container)
         self.info_layout.addWidget(self.progress_bar)
         self.info_layout.addWidget(self.specs_text)
         
@@ -181,8 +335,6 @@ class FixerZApp(QMainWindow):
 
         self.layout.addLayout(self.logo)
         self.layout.addLayout(self.content)
-
-        self.export.hide()
 
         self.start()
     
@@ -310,27 +462,33 @@ class FixerZApp(QMainWindow):
         # mouse_keyboard_status = scan_functions.check_input_devices()
 
         issue = 0
+        hardware_issue = 0
+        memory_issue = 0
+        network_issue = 0
+        cpu_issue = 0
 
         self.result_text.clear()
         self.result_text.setCurrentCharFormat(heading)
         self.result_text.insertPlainText("Troubleshooting Results:\n")
         self.result_text.setCurrentCharFormat(sub_heading)
+        
         # CPU TEST RESULT 
         if "High" in cpu_result:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n\n")
             issue += 1
+            cpu_issue += 1
             ec.append(["HI4"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n\n")
             
-
         # RAM TEST RESULT
         if "High" in ram_result:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n\n")
             issue += 1
+            memory_issue += 1
             ec.append(["HI5"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -341,6 +499,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
             issue += 1
+            network_issue += 1
             ec.append(["SI1"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -361,6 +520,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("USB Devices: \t" + usb_status + "\n\n")
             issue += 1
+            hardware_issue += 1
             ec.append(["HI2"])
         elif "No USB devices found." in usb_status:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -394,6 +554,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("\n")
 
             issue += 1
+            memory_issue += 1  
             ec.append(["HI6"])
 
         # CAMERA TEST RESULT
@@ -401,6 +562,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Camera Status: \t" + camera_status + "\n\n")
             issue += 1
+            hardware_issue += 1
             ec.append(["HI7"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -411,6 +573,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Microphone Status: \t" + mic_status + "\n\n")
             issue += 1
+            hardware_issue += 1
             ec.append(["HI8"])
         else:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -419,13 +582,48 @@ class FixerZApp(QMainWindow):
         #FINAL RESULT
         if issue != 0:
             self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("\n\nPotential issues detected. \nClick on the Possible Solutions button\n")
+            self.result_text.insertPlainText("\n\nPotential issues detected. \nCheck the Possible Solutions Section\n")
             self.solutions_button.show()
         else:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("All tests completed successfully.\n")
+            self.result_text.insertPlainText("No issue found\n")
+
+        #Scan Results
+        if hardware_issue != 0:
+            self.section1_result.setCurrentCharFormat(result_text_bad)
+            self.section1_result.insertPlainText("Issues Detected")
+            self.section1_result.setAlignment(Qt.AlignCenter)
+        else:
+            self.section1_result.setCurrentCharFormat(result_text_good)
+            self.section1_result.insertPlainText("No Issues Detected")
+            self.section1_result.setAlignment(Qt.AlignCenter)
+
+        if network_issue != 0:
+            self.section2_result.setCurrentCharFormat(result_text_bad)
+            self.section2_result.insertPlainText("Issues Detected")
+            self.section2_result.setAlignment(Qt.AlignCenter)
+        else:
+            self.section2_result.setCurrentCharFormat(result_text_good)
+            self.section2_result.insertPlainText("No Issues Detected")
+            self.section2_result.setAlignment(Qt.AlignCenter)
         
-        self.export.show()
+        if memory_issue != 0:
+            self.section3_result.setCurrentCharFormat(result_text_bad)
+            self.section3_result.insertPlainText("Issues Detected")
+            self.section3_result.setAlignment(Qt.AlignCenter)
+        else:
+            self.section3_result.setCurrentCharFormat(result_text_good)
+            self.section3_result.insertPlainText("No Issues Detected")
+            self.section3_result.setAlignment(Qt.AlignCenter)
+        
+        if cpu_issue != 0:
+            self.section4_result.setCurrentCharFormat(result_text_bad)
+            self.section4_result.insertPlainText("Issues Detected")
+            self.section4_result.setAlignment(Qt.AlignCenter)
+        else:
+            self.section4_result.setCurrentCharFormat(result_text_good)
+            self.section4_result.insertPlainText("No Issues Detected")
+            self.section4_result.setAlignment(Qt.AlignCenter)
 
     def export_to_word_file_run(self):
         text = self.result_text.toPlainText()
