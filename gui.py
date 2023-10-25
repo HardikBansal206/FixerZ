@@ -124,7 +124,7 @@ class FixerZApp(QMainWindow):
         self.navigation_container = QWidget()
         self.navigation_layout = QVBoxLayout()
         self.navigation_container.setLayout(self.navigation_layout)
-        self.navigation_container.setStyleSheet("background-color: #2a2854; border: none; border-radius: 20px;")
+        self.navigation_container.setStyleSheet("background-color: #3d395f; border: none; border-radius: 20px;")
         self.navigation_layout.setAlignment(Qt.AlignTop)
         self.navigation_container.setContentsMargins(0, 0, 0, 0)
 
@@ -303,12 +303,15 @@ class FixerZApp(QMainWindow):
         self.test_results_container.layout().addWidget(self.section4_container)
 
 
-            # Old Result Text
+            # Detailed Result Text
         self.result_text = QTextEdit()
         self.result_text.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
         self.result_text.setReadOnly(True)
-        self.result_text.setFixedSize(int(0.66 * screen_width), int(0.44 * screen_height))
+        self.result_text.setFixedSize(int(0.66 * screen_width), int(0.66* screen_height))
         self.result_text.setContentsMargins(10, 10, 10, 10)
+        self.result_text.hide()
+
+        #Progress Bar
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(100)
@@ -503,6 +506,7 @@ class FixerZApp(QMainWindow):
             # Add to the info layout
         self.info_layout.addWidget(self.welcome_text)
         self.info_layout.addWidget(self.test_results_container)
+        self.info_layout.addWidget(self.result_text)
         self.info_layout.addWidget(self.progress_bar)
         self.info_layout.addWidget(self.specs_container)
         
@@ -516,7 +520,7 @@ class FixerZApp(QMainWindow):
         self.specs_text.setContentsMargins(10, 10, 10, 10)
             # Quick Actions Container
         self.quick_actions_container = QWidget()
-        self.quick_actions_container.setStyleSheet("background-color: #3a5488;border: none; border-radius: 20px;")
+        self.quick_actions_container.setStyleSheet("background-color: #3d395f;border: none; border-radius: 20px;")
         self.quick_actions_container.setLayout(QVBoxLayout())
         self.quick_actions_container.setContentsMargins(10, 10, 10, 10)
         self.quick_actions_container.setFixedWidth(int(0.2 * screen_width))
@@ -550,8 +554,23 @@ class FixerZApp(QMainWindow):
         layout.addWidget(self.expand_button)
         self.expand_button_container.setLayout(layout)
         self.expand_button.setCursor(QCursor(Qt.PointingHandCursor))
-        # self.expand_button.clicked.connect(self.expand_result)
-
+        self.expand_button.clicked.connect(self.expand_result)
+                #Collapse Result Button
+        self.collapse_button_container = QWidget()
+        self.collapse_button_container.setStyleSheet("background-color: #585760; color: white; font-weight: bold; border-radius: 20px; border: none;")
+        layout = QHBoxLayout()
+        self.collapse_button = QPushButton(self)
+        self.collapse_button.setStyleSheet("background-color: transparent; color: white; border: none;")
+        self.collapse_button.setText("Collapse Result")
+        icon = QIcon("images/collapse.png")
+        icon_size = QSize(30, 30)
+        self.collapse_button.setIcon(icon)
+        self.collapse_button.setIconSize(icon_size)
+        layout.addWidget(self.collapse_button)
+        self.collapse_button_container.setLayout(layout)
+        self.collapse_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.collapse_button.clicked.connect(self.collapse_result)
+        self.collapse_button_container.hide()
                 #Export Button
         self.export_button_container = QWidget()
         self.export_button_container.setStyleSheet("background-color: #585760; color: white; font-weight: bold; border-radius: 20px; border: none;")
@@ -573,7 +592,9 @@ class FixerZApp(QMainWindow):
                 # Add to quick actions
         self.quick_actions_container.layout().addWidget(self.run_button_container)
         self.quick_actions_container.layout().addWidget(self.expand_button_container)
+        self.quick_actions_container.layout().addWidget(self.collapse_button_container)
         self.quick_actions_container.layout().addWidget(self.export_button_container)
+
 
         self.quick_actions_layout.addWidget(self.specs_text)
         self.quick_actions_layout.addWidget(self.quick_actions_container)
@@ -591,6 +612,20 @@ class FixerZApp(QMainWindow):
     def update_progress(self, value):
         self.progress_bar.setValue(int(value))
         QApplication.processEvents()  
+
+    def expand_result(self):
+        self.test_results_container.hide()
+        self.result_text.show()
+        self.collapse_button_container.show()
+        self.expand_button_container.hide()
+        self.specs_container.hide()
+    
+    def collapse_result(self):
+        self.test_results_container.show()
+        self.result_text.hide()
+        self.collapse_button_container.hide()
+        self.expand_button_container.show()
+        self.specs_container.show()
 
     def fetch_possible_solutions(self):
         try:
@@ -867,7 +902,7 @@ class FixerZApp(QMainWindow):
         #FINAL RESULT
         if issue != 0:
             self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("\n\nPotential issues detected. \nCheck the Possible Solutions Section\n")
+            self.result_text.insertPlainText("Potential issues detected. \nCheck the Possible Solutions Section\n")
             self.solutions_button.show()
         else:
             self.result_text.setCurrentCharFormat(blue_format)
@@ -931,8 +966,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = FixerZApp()
     window.show()
-    window_width = window.width()
-    window_height = window.height()
-
-    print(f"Width: {window_width}, Height: {window_height}")
     sys.exit(app.exec_())
