@@ -162,20 +162,20 @@ def get_gpu_info():
         gpu_memory_used = gpu.memoryUsed
         gpu_utilization = round(((gpu_memory_used) / gpu_memory_total )* 100, 2) # In percentage
 
-        return gpu_model, gpu_utilization
+        return str(gpu_model) + " \n(" + str(gpu_utilization) + "% used)"
     else:
-        print("No GPU information available.")
+        print("Not available")
 
 def get_ram_info():
     ram_info = psutil.virtual_memory()
     total_ram_gb = round(ram_info.total / (1024 ** 3), 2)
-    return total_ram_gb, ram_info.percent
+    return str(round(total_ram_gb, 2)) + " GB \n(" + str(round(ram_info.percent,2)) + "% used)"
 
 def get_display_info():
     # Get the primary display's size (resolution)
     primary_display = get_monitors()[0]  # Assuming the first monitor is the primary one
     resolution = (primary_display.width, primary_display.height)
-    return resolution
+    return str(resolution[0]) + " x " + str(resolution[1]) 
 
 def get_storage_info():
     # Get information for all available drives
@@ -192,4 +192,4 @@ def get_storage_info():
         available_storage_gb = storage_info.free / (1024 ** 3)  # Available storage space in GB
         
         total_available_storage_gb += available_storage_gb
-    return total_storage_gb, total_available_storage_gb
+    return str(round(total_storage_gb, 2)) + " GB \n(" + str(round(total_available_storage_gb, 2)) + " GB available)"
