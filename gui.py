@@ -210,6 +210,7 @@ class FixerZApp(QMainWindow):
                         self.result_text.setCurrentCharFormat(green_format)
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
+                        error = solution[1]
                         self.result_text.insertPlainText(f"{solution[1]}\n")
                         # view_more_button = QPushButton("View More", self)
                         # view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
@@ -376,7 +377,7 @@ class FixerZApp(QMainWindow):
         # DISK TEST RESULT
         if "Disk usage is normal." in disk_result:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+            self.result_text.insertPlainText("Disk Status: " + str(disk_result) + "\n")
         else:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Disk Status:")
