@@ -1,0 +1,63 @@
+"Error_Code","Error_Detail","Possible_Solutions"
+"HI1","No bootable device found","1. Switch off the system.
+2. Disconnect all power cables to the servers power supply units.
+3. Remove the system cover.
+4. Reseat all the cables of hard drive backplane at both ends.
+5. Reseat all the drives.
+6. Replace the system cover.
+7. Connect the power cables to the servers power supply units.
+8. Power on the system
+9. To enter UEFI, Press F2.
+10. Verify that all installed drives are detected in controller BIOS, if not detected refer to the Troubleshooting Hard drive issues
+section.
+11. Ensure that in BIOS the RAID setting is set to RAID mode for SATA drives.
+12. Save the setting, and reboot the server.
+13. If the issue persists, contact Dell Technical Support for assistance.
+"
+"HI2","USB device not connected.","1. Disconnect the device and reconnect them. 
+2. If the problem persists, connect the keyboard and/or mouse to another USB port on the system. 
+3. Turn off all attached USB devices, and disconnect them from the system and restart the system. 
+5. Reconnect and turn on each USB device one at a time. 
+6.If the problem persists, get help from the support center."
+"HI3","Battery status not available","
+1.Check Battery Connections. 
+2. Update battery drivers. 
+3. Perform power reset. 
+4. Check for a newer version of Windows."
+"HI4","High CPU usage","
+1. Close unnecessary programs. 
+2.Restart the PC. 
+3. Update the software. 
+4. Malware scan."
+"HI5","High RAM usage","
+1. Restart your computer. 
+2. Browser extensions. 
+3. Adjust virtual memory. 
+4. Optimize Software Settings. 
+5. Add more RAM."
+"HI6","High Disk usage","
+1.Close Unnecessary Programs. 
+2.Restart Your Computer 
+3.Check for Windows Updates. 
+4.Clear Temporary Files. 
+5.Upgrade Your Storage Drive 
+6.Check for Disk Fragmentation 
+7.Consider Using a Disk Cleanup Tool"
+"HI7","Camera is not working","
+1. Check Camera Privacy Settings. 
+2. Check camera hardware. 
+3. Update camera drivers and restart your computer. 
+4. Reset camera application."
+"HI8","Microphone not working.","
+1. Check microphone privacy settings. 
+2. Update mirophone drivers and restart your computer. 
+3. Check recording devices. 
+"
+"SI1","Network Error","
+1.Check Your Network Connection. 
+2.Restart Your Computer or Device. 
+3. Reset Network Settings. 
+On Windows: Running the ""ipconfig /release"" and ""ipconfig /renew"" commands in the Command Prompt.
+On macOS: Going to ""System Preferences"" > ""Network"" > selecting your network interface > clicking ""Advanced"" > and choosing ""Renew DHCP Lease."" 
+4.Disable VPN or Proxy 
+5.Update Network Drivers."

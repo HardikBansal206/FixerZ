@@ -863,7 +863,7 @@ class FixerZApp(QMainWindow):
         # DISK TEST RESULT
         if "Disk usage is normal." in disk_result:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Disk Status: " + disk_result + "\n")
+            self.result_text.insertPlainText("Disk Status: " + str(disk_result) + "\n")
         else:
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Disk Status:")
