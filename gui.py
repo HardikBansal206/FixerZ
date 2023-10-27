@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, Q
 from PyQt5.QtGui import QTextCharFormat, QColor, QFont, QPixmap, QIcon, QCursor
 from PyQt5.QtCore import Qt, QSize
 import scan_functions
+import fix_functions
 import mysql.connector as mysql
 from docx import Document
-import webbrowser
 
 #List of error codes
 global ec
@@ -144,7 +144,7 @@ class FixerZApp(QMainWindow):
         self.solutions_button.setIcon(solutions_icon)
         self.solutions_button.setIconSize(self.solutions_button.size())
         self.solutions_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
-        self.solutions_button.clicked.connect(self.fetch_possible_solutions)
+        self.solutions_button.clicked.connect(self.solutions_button_clicked)
 
         self.navigation_layout.addWidget(self.scan_button)
         self.navigation_layout.addWidget(self.solutions_button)
@@ -628,9 +628,6 @@ class FixerZApp(QMainWindow):
         self.specs_container.show()
 
     def fetch_possible_solutions(self):
-        self.specs_container.hide()
-        self.test_results_container.hide()
-        self.result_text.show()
         try:
             self.result_text.clear()
             self.specs_text.clear()
@@ -967,6 +964,12 @@ class FixerZApp(QMainWindow):
 
     def show_specs(self):
         print()
+    
+    def solutions_button_clicked(self):
+        self.fetch_possible_solutions()
+        self.section1_text1.clear()
+        self.section1_text1.setPlainText("Scans")
+        self.section1_text1.setAlignment(Qt.AlignCenter)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
