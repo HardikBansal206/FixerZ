@@ -1,6 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QMessageBox, QLabel
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont, QPixmap, QRadialGradient, QPalette, QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QMessageBox
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont 
 from PyQt5.QtCore import Qt, QPropertyAnimation
 import scan_functions
 import mysql.connector as mysql
@@ -60,128 +60,55 @@ class FixerZApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FixerZ")
-        initial_width = 1200
-        initial_height = int((initial_width * 9) / 16)
-        self.setGeometry(100, 100, initial_width, initial_height)
-        # self.setFixedSize(initial_width, initial_height)
-        self.setStyleSheet("background-color: #0f1d30;")
+        self.setGeometry(100, 100, 800, 830)
+        self.setAutoFillBackground(True)
 
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
 
-        # Create a horizontal layout for the three columns
         self.layout = QVBoxLayout(self.central_widget)
         
-        #Logo and top section
-        self.logo = QHBoxLayout()
-        pixmap = QPixmap("logo.png")  # Replace "logo.png" with the actual path to your logo image
-        screen = QApplication.primaryScreen()
-        screen_geometry = screen.geometry()
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
-        image_width = int(screen_width * 0.07)  # 10% of the screen width
-        pixmap = pixmap.scaledToWidth(image_width, Qt.SmoothTransformation)
-        logo_label = QLabel(self)
-        logo_label.setPixmap(pixmap)
-        self.logo.addWidget(logo_label)
+        self.button_layout = QHBoxLayout()
+        self.run_button = QPushButton("Run Scan", self)
+        self.run_button.setStyleSheet("background-color: #65B891; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
+        self.run_button.clicked.connect(self.run_scan)
+        self.button_layout.addWidget(self.run_button)
 
-        #Content section
-        self.content = QHBoxLayout()
-
-        # Navigation Column
-        self.navigation_container = QWidget()
-        self.navigation_layout = QVBoxLayout()
-        self.navigation_container.setLayout(self.navigation_layout)
-        self.navigation_container.setStyleSheet("background-color: #2a2854; border: none; border-radius: 20px;")
-        self.navigation_layout.setAlignment(Qt.AlignTop)
-        self.navigation_container.setContentsMargins(0, 0, 0, 0)
-
-            # Scan / Test Mode Button
-        scan_icon = QIcon("images/test.png")
-        self.scan_button = QPushButton()
-        self.scan_button.setFixedSize(40, int(0.1 * screen_height))
-        self.scan_button.setIcon(scan_icon)
-        self.scan_button.setIconSize(self.scan_button.size())
-        self.scan_button.setStyleSheet("background-color: transparent; border: none;")
-        self.scan_button.clicked.connect(self.run_scan)
-
-            # Solutions Button
-        solutions_icon = QIcon("images/solutions.png")
-        self.solutions_button = QPushButton()
-        self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
-        self.solutions_button.setIcon(solutions_icon)
-        self.solutions_button.setIconSize(self.solutions_button.size())
-        self.solutions_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
+        self.solutions_button = QPushButton("Possible Solutions", self)
+        self.solutions_button.setStyleSheet("background-color: #1f7a8c; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
         self.solutions_button.clicked.connect(self.fetch_possible_solutions)
+        self.button_layout.addWidget(self.solutions_button)
+        self.solutions_button.hide()
 
-        self.navigation_layout.addWidget(self.scan_button)
-        self.navigation_layout.addWidget(self.solutions_button)
+        self.layout.addLayout(self.button_layout)
 
-        # Info Column
-        self.info_layout = QVBoxLayout()
+        self.specs_text = QTextEdit(self)
+        self.specs_text.setStyleSheet("background-color: #0D0630;border: none;")
+        self.specs_text.setReadOnly(True)
+        self.specs_text.setContentsMargins(10, 10, 10, 10)
+        self.specs_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.layout.addWidget(self.specs_text)
 
-            # Welcome Text
-        self.welcome_text = QTextEdit()
-        self.welcome_text.setStyleSheet("background-color: transparent; border: none;")
-        self.welcome_text.setReadOnly(True)
-        self.welcome_text.setFixedWidth(int(0.66 * screen_width))
-        self.welcome_text.setFixedHeight(int(0.03 * screen_height))
-        self.welcome_text.setContentsMargins(10, 10, 10, 10)
-        user_name = "User"  # Replace with the actual user's name
-        self.welcome_text.setCurrentCharFormat(heading)
-        self.welcome_text.setText(f"Welcome {user_name}")
-        self.welcome_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-            # Tests Section and Progress Bar
-        self.test_results_container = QWidget()
-        self.result_text = QTextEdit()
-        self.result_text.setStyleSheet("background-color: #3d395f; color: white;border: none; border-radius: 20px;")
+        self.result_text = QTextEdit(self)
+        self.result_text.setStyleSheet("background-color: #111111; color: white;border: none;")
         self.result_text.setReadOnly(True)
-        self.result_text.setFixedSize(int(0.66 * screen_width), int(0.44 * screen_height))
+        self.result_text.setMinimumSize(780, 525)
         self.result_text.setContentsMargins(10, 10, 10, 10)
+        self.layout.addWidget(self.result_text)
+
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
         self.progress_bar.hide()
+        self.layout.addWidget(self.progress_bar)
 
-            # Specs Text
-        self.specs_text = QTextEdit()
-        self.specs_text.setStyleSheet("background-color: #0D0630;border: none;")
-        self.specs_text.setReadOnly(True)
-        self.specs_text.setFixedSize(int(0.66 * screen_width), int(0.31 * screen_height))
-        self.specs_text.setContentsMargins(10, 10, 10, 10)
-        self.specs_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
-            # Add to the info layout
-        self.info_layout.addWidget(self.welcome_text)
-        self.info_layout.addWidget(self.result_text)
-        self.info_layout.addWidget(self.progress_bar)
-        self.info_layout.addWidget(self.specs_text)
-        
-        # Quick Actions Column
-        self.quick_actions_layout = QVBoxLayout()
-        self.run_button = QPushButton("Run Scan", self)
-        self.run_button.setStyleSheet("background-color: #65B891; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
-        self.run_button.clicked.connect(self.run_scan)
-        
+        self.export_layout = QHBoxLayout()
         self.export = QPushButton("Export", self)
         self.export.setStyleSheet("background-color: #0000FF; color: white; font-weight: bold; border-radius: 5px; border: none; min-width: 200px; max-width: 400px;min-height: 40px; max-height: 60px;")
         self.export.clicked.connect(self.export_to_word_file_run)
-
-        self.share_button = QPushButton("Share")
-        self.quick_actions_layout.addWidget(self.run_button)
-        self.quick_actions_layout.addWidget(self.export)
-        self.quick_actions_layout.addWidget(self.share_button)
-
-        # Add the three columns to the main layout
-        self.content.addWidget(self.navigation_container)
-        self.content.addLayout(self.info_layout)
-        self.content.addLayout(self.quick_actions_layout)
-
-        self.layout.addLayout(self.logo)
-        self.layout.addLayout(self.content)
-
+        self.export_layout.addWidget(self.export)
+        self.layout.addLayout(self.export_layout)
         self.export.hide()
 
         self.start()
@@ -214,6 +141,7 @@ class FixerZApp(QMainWindow):
                         self.result_text.setCurrentCharFormat(green_format)
                         self.result_text.insertPlainText(f"{solution[0]}: ")
                         self.result_text.insertPlainText("Possible Solutions:")
+                        error = solution[1]
                         self.result_text.insertPlainText(f"{solution[1]}\n")
                         # view_more_button = QPushButton("View More", self)
                         # view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
@@ -270,6 +198,7 @@ class FixerZApp(QMainWindow):
         completed_tests = 0
 
         self.progress_bar.show()
+        self.solutions_button.hide()
         self.result_text.setMinimumHeight(500)
         self.update_progress(0)  # Initialize the progress bar
         QApplication.processEvents()  # Force the GUI to update
