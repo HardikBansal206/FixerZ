@@ -135,13 +135,14 @@ class FixerZApp(QMainWindow):
         self.navigation_container.setContentsMargins(0, 0, 0, 0)
 
             # Scan / Test Mode Button
-        scan_icon = QIcon("images/test.png")
+        scan_icon = QIcon("images/test_clicked.png")
         self.scan_button = QPushButton()
         self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
         self.scan_button.setIconSize(self.scan_button.size())
         self.scan_button.setStyleSheet("background-color: transparent; border: none;")
         self.scan_button.clicked.connect(self.scan_button_clicked)
+        self.scan_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             # Solutions Button
         solutions_icon = QIcon("images/solutions.png")
@@ -151,6 +152,7 @@ class FixerZApp(QMainWindow):
         self.solutions_button.setIconSize(self.solutions_button.size())
         self.solutions_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
         self.solutions_button.clicked.connect(self.solutions_button_clicked)
+        self.solutions_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             # Auto Fix Button
         auto_fix_icon = QIcon("images/autofix.png")
@@ -160,6 +162,7 @@ class FixerZApp(QMainWindow):
         self.auto_fix_button.setIconSize(self.auto_fix_button.size())
         self.auto_fix_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
         self.auto_fix_button.clicked.connect(self.auto_fix_button_clicked)
+        self.auto_fix_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             # Add buttons to navigation layout
         self.navigation_layout.addWidget(self.scan_button)
@@ -670,7 +673,7 @@ class FixerZApp(QMainWindow):
                     solution = listdata.get_sol(i)
                     self.result_text.setCurrentCharFormat(green_format)
                     self.result_text.insertPlainText(f"{solution[0]}: ")
-                    self.result_text.insertPlainText("Possible Solutions:")
+                    self.result_text.insertPlainText("\nPossible Solutions:\n")
                     self.result_text.insertPlainText(f"{solution[1]}\n")
                 self.result_text.insertPlainText("\n")
 
@@ -802,7 +805,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n\n")
             issue += 1
             cpu_issue += 1
-            ec.append(["HI4"])
+            ec.append("HI4")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("CPU Status: \t" + cpu_result + "\n\n")
@@ -813,7 +816,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n\n")
             issue += 1
             memory_issue += 1
-            ec.append(["HI5"])
+            ec.append("HI5")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n\n")
@@ -824,7 +827,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
             issue += 1
             network_issue += 1
-            ec.append(["SI1"])
+            ec.append("SI1")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
@@ -845,7 +848,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("USB Devices: \t" + usb_status + "\n\n")
             issue += 1
             hardware_issue += 1
-            ec.append(["HI2"])
+            ec.append("HI2")
         elif "No USB devices found." in usb_status:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("USB Devices: \t" +"USB device not found.\n\n")
@@ -879,7 +882,7 @@ class FixerZApp(QMainWindow):
 
             issue += 1
             memory_issue += 1  
-            ec.append(["HI6"])
+            ec.append("HI6")
 
         # CAMERA TEST RESULT
         if "not" in camera_status or "error" in camera_status:
@@ -887,7 +890,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("Camera Status: \t" + camera_status + "\n\n")
             issue += 1
             hardware_issue += 1
-            ec.append(["HI7"])
+            ec.append("HI7")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Camera Status: \t" + camera_status + "\n\n")
@@ -898,7 +901,7 @@ class FixerZApp(QMainWindow):
             self.result_text.insertPlainText("Microphone Status: \t" + mic_status + "\n\n")
             issue += 1
             hardware_issue += 1
-            ec.append(["HI8"])
+            ec.append("HI8")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Microphone Status: \t" + mic_status + "\n\n")
@@ -967,6 +970,15 @@ class FixerZApp(QMainWindow):
         print()
     
     def scan_button_clicked(self):
+        auto_fix_icon = QIcon("images/autofix.png")
+        self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
+        self.auto_fix_button.setIcon(auto_fix_icon)
+        solutions_icon = QIcon("images/solutions.png")
+        self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
+        self.solutions_button.setIcon(solutions_icon)
+        scan_icon = QIcon("images/test_clicked.png")
+        self.scan_button.setFixedSize(40, int(0.1 * screen_height))
+        self.scan_button.setIcon(scan_icon)
         global present_screen
         if present_screen == 2:
             present_screen = 1
@@ -1032,9 +1044,11 @@ class FixerZApp(QMainWindow):
             self.section3_image.setPixmap(QPixmap("images/memory.png"))
             self.section3_image.setAlignment(Qt.AlignCenter)
             self.section3_result.show()
-            self.section3_set_button1.hide()
-            self.section3_set_button2.hide()
-            
+            try:
+                self.section3_set_button1.hide()
+                self.section3_set_button2.hide()
+            except:
+                pass
             self.section4_container.show()
 
         elif present_screen == 3:
@@ -1044,7 +1058,7 @@ class FixerZApp(QMainWindow):
             self.welcome_text.setText("Welcome User!")
 
             self.expand_button_container.show()
-            
+
             self.section1_text1.clear()
             self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
             self.section1_text1.setFixedHeight(int(0.1 * screen_height))
@@ -1103,6 +1117,15 @@ class FixerZApp(QMainWindow):
 
     def auto_fix_button_clicked(self):
         global present_screen
+        auto_fix_icon = QIcon("images/autofix_clicked.png")
+        self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
+        self.auto_fix_button.setIcon(auto_fix_icon)
+        solutions_icon = QIcon("images/solutions.png")
+        self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
+        self.solutions_button.setIcon(solutions_icon)
+        scan_icon = QIcon("images/test.png")
+        self.scan_button.setFixedSize(40, int(0.1 * screen_height))
+        self.scan_button.setIcon(scan_icon)
         if present_screen == 2:
             present_screen = 3
             self.welcome_text.clear()
@@ -1213,6 +1236,15 @@ class FixerZApp(QMainWindow):
 
     def solutions_button_clicked(self):
         global present_screen
+        auto_fix_icon = QIcon("images/autofix.png")
+        self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
+        self.auto_fix_button.setIcon(auto_fix_icon)
+        solutions_icon = QIcon("images/solutions_clicked.png")
+        self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
+        self.solutions_button.setIcon(solutions_icon)
+        scan_icon = QIcon("images/test.png")
+        self.scan_button.setFixedSize(40, int(0.1 * screen_height))
+        self.scan_button.setIcon(scan_icon)
         if present_screen != 2:
             present_screen = 2
             self.welcome_text.clear()
