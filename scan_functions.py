@@ -6,6 +6,9 @@ import subprocess
 import wmi
 import cv2
 import pyaudio
+import cpuinfo
+from screeninfo import get_monitors
+import GPUtil
 
 
 def check_cpu_usage():
@@ -145,21 +148,48 @@ def check_microphone():
     except Exception as e:
         return f"Microphone error: {str(e)}"
 
-# def check_input_devices():
-#     try:
-#         # Check mouse movement with a timeout
-#         max_retries = 5  # Adjust the number of retries as needed
-#         for _ in range(max_retries):
-#             try:
-#                 pyautogui.move(10, 10, duration=0.5)
-#                 pyautogui.move(-10, -10, duration=0.5)
-#                 break  # Exit the loop if successful
-#             except Exception as e:
-#                 time.sleep(1)  # Wait for a moment before retrying
+def get_cpu_info():
+    cpu_info = cpuinfo.get_cpu_info()
+    processor_name = cpu_info['brand_raw']
+    return processor_name 
 
-#         # Check keyboard input
-#         pyautogui.write("Test Keyboard Input", interval=0.1)
+def get_gpu_info():
+    gpu_info = GPUtil.getGPUs()
+    if gpu_info:
+        gpu = gpu_info[0]  # Assuming you have at least one GPU
+        gpu_model = gpu.name
+        gpu_memory_total = gpu.memoryTotal
+        gpu_memory_used = gpu.memoryUsed
+        gpu_utilization = round(((gpu_memory_used) / gpu_memory_total )* 100, 2) # In percentage
 
-#         return "Mouse and keyboard are working fine."
-#     except Exception as e:
-#         return f"Error checking input devices: {e}"
+        return str(gpu_model) + " \n(" + str(gpu_utilization) + "% used)"
+    else:
+        print("Not available")
+
+def get_ram_info():
+    ram_info = psutil.virtual_memory()
+    total_ram_gb = round(ram_info.total / (1024 ** 3), 2)
+    return str(round(total_ram_gb, 2)) + " GB \n(" + str(round(ram_info.percent,2)) + "% used)"
+
+def get_display_info():
+    # Get the primary display's size (resolution)
+    primary_display = get_monitors()[0]  # Assuming the first monitor is the primary one
+    resolution = (primary_display.width, primary_display.height)
+    return str(resolution[0]) + " x " + str(resolution[1]) 
+
+def get_storage_info():
+    # Get information for all available drives
+    drive_info = psutil.disk_partitions(all=True)
+
+    total_available_storage_gb = 0
+    total_storage_gb = 0
+
+    for drive in drive_info:
+        drive_letter = drive.device
+        storage_info = psutil.disk_usage(drive.mountpoint)
+        
+        total_storage_gb += storage_info.total / (1024 ** 3)  # Total storage capacity in GB
+        available_storage_gb = storage_info.free / (1024 ** 3)  # Available storage space in GB
+        
+        total_available_storage_gb += available_storage_gb
+    return str(round(total_storage_gb, 2)) + " GB \n(" + str(round(total_available_storage_gb, 2)) + " GB available)"
