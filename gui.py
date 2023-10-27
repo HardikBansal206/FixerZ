@@ -1,11 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QLabel, QMessageBox
 from PyQt5.QtGui import QTextCharFormat, QColor, QFont, QPixmap, QIcon, QCursor
 from PyQt5.QtCore import Qt, QSize
 import scan_functions
 import fix_functions
-import mysql.connector as mysql
+import listdata
 from docx import Document
+import threading
+import subprocess
+
+present_screen = 1
 
 #List of error codes
 global ec
@@ -109,7 +113,9 @@ class FixerZApp(QMainWindow):
         pixmap = QPixmap("logo.png")  # Replace "logo.png" with the actual path to your logo image
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
+        global screen_width 
         screen_width = screen_geometry.width()
+        global screen_height 
         screen_height = screen_geometry.height()
         image_width = int(screen_width * 0.07)  # 10% of the screen width
         pixmap = pixmap.scaledToWidth(image_width, Qt.SmoothTransformation)
@@ -135,7 +141,7 @@ class FixerZApp(QMainWindow):
         self.scan_button.setIcon(scan_icon)
         self.scan_button.setIconSize(self.scan_button.size())
         self.scan_button.setStyleSheet("background-color: transparent; border: none;")
-        self.scan_button.clicked.connect(self.run_scan)
+        self.scan_button.clicked.connect(self.scan_button_clicked)
 
             # Solutions Button
         solutions_icon = QIcon("images/solutions.png")
@@ -146,8 +152,19 @@ class FixerZApp(QMainWindow):
         self.solutions_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
         self.solutions_button.clicked.connect(self.solutions_button_clicked)
 
+            # Auto Fix Button
+        auto_fix_icon = QIcon("images/autofix.png")
+        self.auto_fix_button = QPushButton()
+        self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
+        self.auto_fix_button.setIcon(auto_fix_icon)
+        self.auto_fix_button.setIconSize(self.auto_fix_button.size())
+        self.auto_fix_button.setStyleSheet("background-color: transparent; color: white; font-weight: bold; border-radius: 5px; border: none")
+        self.auto_fix_button.clicked.connect(self.auto_fix_button_clicked)
+
+            # Add buttons to navigation layout
         self.navigation_layout.addWidget(self.scan_button)
         self.navigation_layout.addWidget(self.solutions_button)
+        self.navigation_layout.addWidget(self.auto_fix_button)
 
         # Info Column
         self.info_layout = QVBoxLayout()
@@ -159,9 +176,8 @@ class FixerZApp(QMainWindow):
         self.welcome_text.setFixedWidth(int(0.66 * screen_width))
         self.welcome_text.setFixedHeight(int(0.05 * screen_height))
         self.welcome_text.setContentsMargins(10, 10, 10, 10)
-        user_name = "User"  # Replace with the actual user's name
         self.welcome_text.setCurrentCharFormat(heading)
-        self.welcome_text.setText(f"Welcome {user_name}")
+        self.welcome_text.setText("Welcome User!")
         self.welcome_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
             # Tests Section and Progress Bar
@@ -540,6 +556,22 @@ class FixerZApp(QMainWindow):
         self.run_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.run_button.clicked.connect(self.run_scan)
 
+                # Show Solutions Button
+        self.show_solutions_container = QWidget()
+        self.show_solutions_container.setStyleSheet("background-color: #585760; color: white; font-weight: bold; border-radius: 20px; border: none;")
+        layout = QHBoxLayout()
+        self.show_solutions = QPushButton(self)
+        self.show_solutions.setStyleSheet("background-color: transparent; color: white; border: none;")
+        self.show_solutions.setText("Show Solutions")
+        icon = QIcon("images/scan.png")
+        icon_size = QSize(30, 30)
+        self.show_solutions.setIcon(icon)
+        self.show_solutions.setIconSize(icon_size) 
+        layout.addWidget(self.show_solutions)
+        self.show_solutions_container.setLayout(layout)
+        self.show_solutions.setCursor(QCursor(Qt.PointingHandCursor))
+        self.show_solutions.clicked.connect(self.fetch_possible_solutions)
+        self.show_solutions_container.hide()
                 # Expand Result Button
         self.expand_button_container = QWidget()
         self.expand_button_container.setStyleSheet("background-color: #585760; color: white; font-weight: bold; border-radius: 20px; border: none;")
@@ -591,6 +623,7 @@ class FixerZApp(QMainWindow):
         self.share_button = QPushButton("Share")
                 # Add to quick actions
         self.quick_actions_container.layout().addWidget(self.run_button_container)
+        self.quick_actions_container.layout().addWidget(self.show_solutions_container)
         self.quick_actions_container.layout().addWidget(self.expand_button_container)
         self.quick_actions_container.layout().addWidget(self.collapse_button_container)
         self.quick_actions_container.layout().addWidget(self.export_button_container)
@@ -628,46 +661,19 @@ class FixerZApp(QMainWindow):
         self.specs_container.show()
 
     def fetch_possible_solutions(self):
-        try:
             self.result_text.clear()
-            self.specs_text.clear()
-            self.start()
-            # Replace with your database connection details
-            db_connection = mysql.connect(
-                host="127.0.0.1",
-                user="root",
-                password="Nikita1234@",
-                database="fixers"
-            )
             if len(ec) == 0:
                 self.result_text.setCurrentCharFormat(green_format)
                 self.result_text.insertPlainText("NO ISSUES FOUND")
             else:
-                cursor = db_connection.cursor()
                 for i in ec:
-                    cursor.execute("SELECT Error_Detail, Possible_Solutions FROM systemissues where Error_Code = %s", (i))
-                    solutions = cursor.fetchall()
-                    for solution in solutions:
-                        self.result_text.setCurrentCharFormat(green_format)
-                        self.result_text.insertPlainText(f"{solution[0]}: ")
-                        self.result_text.insertPlainText("Possible Solutions:")
-                        self.result_text.insertPlainText(f"{solution[1]}\n")
-                        # view_more_button = QPushButton("View More", self)
-                        # view_more_button.setStyleSheet("color: blue; text-decoration: underline;")
-                        # view_more_button.clicked.connect(lambda checked, desc=solution[0]: self.view_more_clicked(desc))
-                        # self.layout.addWidget(view_more_button)
+                    solution = listdata.get_sol(i)
+                    self.result_text.setCurrentCharFormat(green_format)
+                    self.result_text.insertPlainText(f"{solution[0]}: ")
+                    self.result_text.insertPlainText("Possible Solutions:")
+                    self.result_text.insertPlainText(f"{solution[1]}\n")
                 self.result_text.insertPlainText("\n")
-            cursor.close()
-            db_connection.close()
 
-        except Exception as e:
-            self.result_text.clear()
-            self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText(f"Error fetching solutions: {str(e)}")
-
-    # def view_more_clicked(self, error_description):
-    #     self.search_error_solution(error_description)
-    #     QMessageBox.information(self, "View More Clicked", "You clicked the 'View More' button.")
 
     def start(self):  
         # get system specs
@@ -713,11 +719,6 @@ class FixerZApp(QMainWindow):
         storage_info = scan_functions.get_storage_info()
         self.specs_section5_result.setCurrentCharFormat(sub_heading)
         self.specs_section5_result.setPlainText(storage_info)
-
-
-    # def search_error_solution(error_description):
-    #     search_query = f"Step wise solution for troubleshooting {error_description}"
-    #     webbrowser.open_new_tab("https://www.google.com/search?q=" + search_query)
 
     def run_scan(self):
         self.specs_container.show()
@@ -965,11 +966,653 @@ class FixerZApp(QMainWindow):
     def show_specs(self):
         print()
     
+    def scan_button_clicked(self):
+        global present_screen
+        if present_screen == 2:
+            present_screen = 1
+            self.test_results_container.show()
+            self.result_text.hide()
+            self.expand_button_container.show()
+            self.specs_container.show()
+            self.run_button_container.show()
+            self.show_solutions_container.hide()
+
+            self.welcome_text.clear()
+            self.welcome_text.setCurrentCharFormat(heading)
+            self.welcome_text.setText("Welcome User!")
+
+            self.section1_text1.clear()
+            self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section1_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section1_text1.setContentsMargins(10, 10, 10, 10)
+            self.section1_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section1_text1.setCurrentCharFormat(heading)
+            self.section1_text1.setPlainText("Hardware Scans")
+            self.section1_text1.setAlignment(Qt.AlignCenter)
+            self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+            self.section1_image.setAlignment(Qt.AlignCenter)
+            self.section1_result.show()
+            try:
+                self.section1_run_button.hide()
+            except:
+                pass
+            try:
+                self.section1_set_button.hide()
+            except:
+                pass
+
+            self.section2_text1.clear()
+            self.section2_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section2_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section2_text1.setContentsMargins(10, 10, 10, 10)
+            self.section2_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section2_text1.setCurrentCharFormat(heading)
+            self.section2_text1.setPlainText("Network Scans")
+            self.section2_text1.setAlignment(Qt.AlignCenter)
+            self.section2_image.setPixmap(QPixmap("images/network.png"))
+            self.section2_image.setAlignment(Qt.AlignCenter)
+            self.section2_result.show()
+            try:
+                self.section2_run_button.hide()
+            except:
+                pass
+            try:
+                self.section2_set_button.hide()
+            except:
+                pass
+
+            self.section3_text1.clear()
+            self.section3_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section3_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section3_text1.setContentsMargins(10, 10, 10, 10)
+            self.section3_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section3_text1.setCurrentCharFormat(heading)
+            self.section3_text1.setPlainText("Memory Scans")
+            self.section3_text1.setAlignment(Qt.AlignCenter)
+            self.section3_image.setPixmap(QPixmap("images/memory.png"))
+            self.section3_image.setAlignment(Qt.AlignCenter)
+            self.section3_result.show()
+            self.section3_set_button1.hide()
+            self.section3_set_button2.hide()
+            
+            self.section4_container.show()
+
+        elif present_screen == 3:
+            present_screen = 1 
+            self.welcome_text.clear()
+            self.welcome_text.setCurrentCharFormat(heading)
+            self.welcome_text.setText("Welcome User!")
+
+            self.expand_button_container.show()
+            
+            self.section1_text1.clear()
+            self.section1_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section1_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section1_text1.setContentsMargins(10, 10, 10, 10)
+            self.section1_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section1_text1.setCurrentCharFormat(heading)
+            self.section1_text1.setPlainText("Hardware Scans")
+            self.section1_text1.setAlignment(Qt.AlignCenter)
+            self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+            self.section1_image.setAlignment(Qt.AlignCenter)
+            self.section1_result.show()
+            try:
+                self.section1_run_button.hide()
+            except:
+                pass
+            try:
+                self.section1_set_button.hide()
+            except:
+                pass
+
+            self.section2_text1.clear()
+            self.section2_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section2_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section2_text1.setContentsMargins(10, 10, 10, 10)
+            self.section2_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section2_text1.setCurrentCharFormat(heading)
+            self.section2_text1.setPlainText("Network Scans")
+            self.section2_text1.setAlignment(Qt.AlignCenter)
+            self.section2_image.setPixmap(QPixmap("images/network.png"))
+            self.section2_image.setAlignment(Qt.AlignCenter)
+            self.section2_result.show()
+            try:
+                self.section2_run_button.hide()
+            except:
+                pass
+            try:
+                self.section2_set_button.hide()
+            except:
+                pass
+
+            self.section3_text1.clear()
+            self.section3_container.setFixedSize(int(0.15 * screen_width), int(0.34 * screen_height))
+            self.section3_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section3_text1.setContentsMargins(10, 10, 10, 10)
+            self.section3_text1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.section3_text1.setCurrentCharFormat(heading)
+            self.section3_text1.setPlainText("Memory Scans")
+            self.section3_text1.setAlignment(Qt.AlignCenter)
+            self.section3_image.setPixmap(QPixmap("images/memory.png"))
+            self.section3_image.setAlignment(Qt.AlignCenter)
+            self.section3_result.show()
+            self.section3_set_button1.hide()
+            self.section3_set_button2.hide()
+            
+            self.section4_container.show()
+
+    def auto_fix_button_clicked(self):
+        global present_screen
+        if present_screen == 2:
+            present_screen = 3
+            self.welcome_text.clear()
+            self.welcome_text.setCurrentCharFormat(heading)
+            self.welcome_text.setText("Quick Fixes")
+            self.test_results_container.show()
+            self.result_text.hide()
+            self.expand_button_container.hide()
+            self.collapse_button_container.hide()
+            self.specs_container.show()
+            self.run_button_container.show()
+            self.show_solutions_container.hide()
+
+            self.section1_text1.clear()
+            self.section1_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section1_text1.setPlainText("Clear Cache")
+            self.section1_text1.setAlignment(Qt.AlignCenter)
+            self.section1_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section1_image.setPixmap(QPixmap("images/cache.png"))
+            self.section1_image.setAlignment(Qt.AlignCenter)
+            self.section1_result.hide()
+            self.section1_set_button = QPushButton("Set Files")
+            self.section1_set_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section1_set_button.clicked.connect(self.cache_settings_set_button_clicked)
+            self.section1_container.layout().addWidget(self.section1_set_button)
+
+            self.section2_text1.clear()
+            self.section2_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section2_text1.setPlainText("Disk Fragmentation")
+            self.section2_text1.setAlignment(Qt.AlignCenter)
+            self.section2_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section2_image.setPixmap(QPixmap("images/defrag.png"))
+            self.section2_image.setAlignment(Qt.AlignCenter)
+            self.section2_result.hide()
+            self.section2_set_button = QPushButton("Analyse Disk")
+            self.section2_set_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section2_set_button.clicked.connect(self.disk_analyse_button_clicked)
+            self.section2_container.layout().addWidget(self.section2_set_button)
+
+            self.section3_text1.clear()
+            self.section3_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section3_text1.setPlainText("Windows Scan")
+            self.section3_text1.setAlignment(Qt.AlignCenter)
+            self.section3_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section3_image.setPixmap(QPixmap("images/windows_scan.png"))
+            self.section3_image.setAlignment(Qt.AlignCenter)
+            self.section3_result.hide()
+            self.section3_set_button1 = QPushButton("Run Quick Scan")
+            self.section3_set_button1.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section3_set_button1.clicked.connect(self.windows_run_quick_scan)
+            self.section3_set_button2 = QPushButton("Run Full Scan")
+            self.section3_set_button2.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section3_set_button2.clicked.connect(self.confirm_and_run_full_scan)   
+            self.section3_container.layout().addWidget(self.section3_set_button1)
+            self.section3_container.layout().addWidget(self.section3_set_button2)
+
+            self.section4_container.hide()
+
+        if present_screen == 1:
+            present_screen = 3 
+            self.welcome_text.clear()
+            self.welcome_text.setCurrentCharFormat(heading)
+            self.welcome_text.setText("Quick Fixes")
+            self.section1_text1.clear()
+            self.section1_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section1_text1.setPlainText("Clear Cache")
+            self.section1_text1.setAlignment(Qt.AlignCenter)
+            self.section1_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section1_image.setPixmap(QPixmap("images/cache.png"))
+            self.section1_image.setAlignment(Qt.AlignCenter)
+            self.section1_result.hide()
+            self.section1_set_button = QPushButton("Set Files")
+            self.section1_set_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section1_set_button.clicked.connect(self.cache_settings_set_button_clicked)
+            self.section1_container.layout().addWidget(self.section1_set_button)
+
+            self.section2_text1.clear()
+            self.section2_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section2_text1.setPlainText("Disk Fragmentation")
+            self.section2_text1.setAlignment(Qt.AlignCenter)
+            self.section2_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section2_image.setPixmap(QPixmap("images/defrag.png"))
+            self.section2_image.setAlignment(Qt.AlignCenter)
+            self.section2_result.hide()
+            self.section2_set_button = QPushButton("Analyse Disk")
+            self.section2_set_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section2_set_button.clicked.connect(self.disk_analyse_button_clicked)
+            self.section2_container.layout().addWidget(self.section2_set_button)
+
+            self.section3_text1.clear()
+            self.section3_container.setFixedSize(int(0.20 * screen_width), int(0.34 * screen_height))
+            self.section3_text1.setPlainText("Windows Scan")
+            self.section3_text1.setAlignment(Qt.AlignCenter)
+            self.section3_text1.setFixedHeight(int(0.1 * screen_height))
+            self.section3_image.setPixmap(QPixmap("images/windows_scan.png"))
+            self.section3_image.setAlignment(Qt.AlignCenter)
+            self.section3_result.hide()
+            self.section3_set_button1 = QPushButton("Run Quick Scan")
+            self.section3_set_button1.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section3_set_button1.clicked.connect(self.windows_run_quick_scan)
+            self.section3_set_button2 = QPushButton("Run Full Scan")
+            self.section3_set_button2.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section3_set_button2.clicked.connect(self.confirm_and_run_full_scan)   
+            self.section3_container.layout().addWidget(self.section3_set_button1)
+            self.section3_container.layout().addWidget(self.section3_set_button2)
+
+            self.section4_container.hide()
+
     def solutions_button_clicked(self):
-        self.fetch_possible_solutions()
-        self.section1_text1.clear()
-        self.section1_text1.setPlainText("Scans")
-        self.section1_text1.setAlignment(Qt.AlignCenter)
+        global present_screen
+        if present_screen != 2:
+            present_screen = 2
+            self.welcome_text.clear()
+            self.welcome_text.setCurrentCharFormat(heading)
+            self.welcome_text.setText("Solutions")
+            self.test_results_container.hide()
+            self.result_text.show()
+            self.expand_button_container.hide()
+            self.collapse_button_container.hide()
+            self.specs_container.hide()
+            self.result_text.clear()
+            self.result_text.setCurrentCharFormat(sub_heading)
+            self.result_text.insertPlainText("Click on the Solutions Button")
+            self.run_button_container.hide()
+            self.show_solutions_container.show()
+
+    def cache_settings_set_button_clicked(self):
+        result = fix_functions.disk_cleanup_setup(1)
+        if "error" in result:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Success")
+            msg_box.setText("You can now delete the cache with Disk Cleanup")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "color: white;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+            self.section1_run_button = QPushButton("Clear Cache")
+            self.section1_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section1_run_button.clicked.connect(self.cache_settings_run_button_clicked)
+            self.section1_container.layout().addWidget(self.section1_run_button)
+
+    def cache_settings_run_button_clicked(self):
+        result = fix_functions.disk_cleanup(1)
+        if "error" in result:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Success")
+            msg_box.setText("Cache Cleared Successfully")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "color: white;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+
+    def disk_analyse_button_clicked(self):
+        result = fix_functions.analyze_all_drives()
+        if "failure" in result:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Success")
+            msg_box.setText("All Disks Analyzed Successfully")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "color: white;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+            self.section2_run_button = QPushButton("Defragment Disk")
+            self.section2_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+            self.section2_run_button.clicked.connect(self.disk_defrag_run_button_clicked)
+            self.section2_container.layout().addWidget(self.section2_run_button)
+
+    def disk_defrag_run_button_clicked(self):
+        result = fix_functions.defragment_all_drives()
+        if "failure" in result:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Success")
+            msg_box.setText("Disk Defragmented Successfully")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "color: white;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+
+    def windows_run_quick_scan(self):
+        scan_message_box = QMessageBox(self)
+        scan_message_box.setWindowTitle("Scan Running")
+        scan_message_box.setText("The scan is in progress. Please wait.")
+        scan_message_box.setStandardButtons(QMessageBox.NoButton)
+        scan_message_box.setModal(True)
+        scan_message_box.setStyleSheet(
+            "QMessageBox {"
+            "background-color: #F2F2F2;"
+            "}"
+            "QMessageBox QLabel {"
+            "font-size: 14px;"
+            "background-color: #F2F2F2;"
+            "color: #333333;"
+            "}"
+        )
+        def close_message_box():
+            scan_message_box.accept()
+        def run_scan():
+            command = '"%ProgramFiles%\\Windows Defender\\MpCmdRun.exe" -Scan -ScanType 1'
+            try:
+                subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                subprocess.run("start ms-settings:windowsdefender", shell=True)
+            except Exception as e:
+                result = f"An error occurred during the scan: {e}"
+            else:
+                result = "Scan completed successfully"
+            finally:
+                close_message_box()
+                self.handle_scan_result(result)
+        
+        scan_thread = threading.Thread(target=run_scan)
+        scan_thread.start()
+        scan_message_box.exec_()
+
+    def handle_scan_result(self, result):
+        if "error" in result:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Success")
+            msg_box.setText("Scan Completed Successfully")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "color: white;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+
+    def confirm_and_run_full_scan(self):
+        confirm_message_box = QMessageBox(self)
+        confirm_message_box.setWindowTitle("Warning")
+        confirm_message_box.setText("Running a full scan may take a long time.\nDo you want to continue?")
+        
+        # Add "Yes" button with a custom background color
+        yes_button = confirm_message_box.addButton(QMessageBox.Yes)
+        yes_button.setStyleSheet("background-color: #007ACC; color: white;")
+
+        # Add "No" button with a custom background color
+        no_button = confirm_message_box.addButton(QMessageBox.No)
+        no_button.setStyleSheet("background-color: #FF0000; color: white;")
+
+        confirm_message_box.setStyleSheet(
+            "QMessageBox {"
+            "background-color: #F2F2F2;"
+            "}"
+            "QMessageBox QLabel {"
+            "font-size: 14px;"
+            "background-color: #F2F2F2;"
+            "color: #333333;"
+            "}"
+        )
+        result = confirm_message_box.exec_()
+        if result == QMessageBox.Yes:
+            self.run_full_scan()
+
+    def windows_run_full_scan(self):
+        scan_message_box = QMessageBox(self)
+        scan_message_box.setWindowTitle("Scan Running")
+        scan_message_box.setText("The scan is in progress. Please wait.")
+        scan_message_box.setStandardButtons(QMessageBox.NoButton)
+        scan_message_box.setModal(True)
+        scan_message_box.setStyleSheet(
+            "QMessageBox {"
+            "background-color: #F2F2F2;"
+            "}"
+            "QMessageBox QLabel {"
+            "font-size: 14px;"
+            "background-color: #F2F2F2;"
+            "color: #333333;"
+            "}"
+        )
+        def close_message_box():
+            scan_message_box.accept()
+        def run_scan():
+            command = '"%ProgramFiles%\\Windows Defender\\MpCmdRun.exe" -Scan -ScanType 2'
+            try:
+                subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                subprocess.run("start ms-settings:windowsdefender", shell=True)
+            except Exception as e:
+                result = f"An error occurred during the scan: {e}"
+            else:
+                result = "Scan completed successfully"
+            finally:
+                close_message_box()
+                self.handle_scan_result(result)
+        
+        scan_thread = threading.Thread(target=run_scan)
+        scan_thread.start()
+        scan_message_box.exec_()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
