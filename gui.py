@@ -102,6 +102,9 @@ class FixerZApp(QMainWindow):
         self.setFixedSize(1749, 843)
         self.setStyleSheet("background-color: #0f1d30;")
 
+        app_icon = QIcon("images\logo\icon.png") 
+        self.setWindowIcon(app_icon)
+
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
 
