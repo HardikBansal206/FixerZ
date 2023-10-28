@@ -677,7 +677,6 @@ class FixerZApp(QMainWindow):
                     self.result_text.insertPlainText(f"{solution[1]}\n")
                 self.result_text.insertPlainText("\n")
 
-
     def start(self):  
         # get system specs
         hostname_result = scan_functions.check_hostname()
