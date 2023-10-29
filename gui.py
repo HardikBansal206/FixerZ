@@ -788,39 +788,44 @@ class FixerZApp(QMainWindow):
 
         self.result_text.insertPlainText("Checking System Status...\n")
 
-        cpu_result = scan_functions.check_cpu_usage()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
+        try:
+            cpu_result = scan_functions.check_cpu_usage()
+        except:
+            cpu_result = "OS Issues"
+        
+        try:
+            ram_result = scan_functions.check_ram_usage()
+        except:
+            ram_result = "OS Issues"
+        
+        try:
+            disk_result = scan_functions.check_disk_usage()
+        except:
+            disk_result = "OS Issues"
 
-        ram_result = scan_functions.check_ram_usage()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
+        try:
+            network_result = scan_functions.check_network_status()
+        except:
+            network_result = "OS Issues"
         
-        disk_result = scan_functions.check_disk_usage()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
+        try:
+            usb_status = scan_functions.check_usb_ports()
+        except:
+            usb_status = "OS Issues"
+
+        try:
+            camera_status = scan_functions.check_camera()
+        except:
+            camera_status = "OS Issues"
         
-        network_result = scan_functions.check_network_status()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
+        try:
+            mic_status = scan_functions.check_microphone()
+        except:
+            mic_status = "OS Issues"
         
-        usb_status = scan_functions.check_usb_ports()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
-        
-        camera_status = scan_functions.check_camera()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
-        
-        mic_status = scan_functions.check_microphone()
-        completed_tests += 1
-        self.update_progress(completed_tests / total_tests * 100)
-        
-        self.progress_bar.hide()
         self.result_text.setMinimumHeight(525)
 
-        # mouse_keyboard_status = scan_functions.check_input_devices()
-
+        # Check the number of issues
         issue = 0
         hardware_issue = 0
         memory_issue = 0
@@ -864,16 +869,6 @@ class FixerZApp(QMainWindow):
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
-
-        # # MOUSE AND KEYBOARD TEST RESULT
-        # if "not" in mouse_keyboard_status or "error" in mouse_keyboard_status:
-        #     self.result_text.setCurrentCharFormat(red_format)
-        #     self.result_text.insertPlainText("Mouse and Keyboard Status: \t" + mouse_keyboard_status + "\n")
-        #     issue += 1
-        #     ec.append(["HI9"])
-        # else:
-        #     self.result_text.setCurrentCharFormat(blue_format)
-        #     self.result_text.insertPlainText("Mouse and Keyboard Status: \t" + mouse_keyboard_status + "\n")
 
         #USB TEST RESULT
         if "not" in usb_status or "Error" in usb_status:
@@ -944,6 +939,10 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Potential issues detected. \nCheck the Possible Solutions Section\n")
             self.solutions_button.show()
+        elif mic_status == "OS Issues" or camera_status == "OS Issues" or usb_status == "OS Issues" or network_result == "OS Issues" or disk_result == "OS Issues" or ram_result == "OS Issues" or cpu_result == "OS Issues":
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Some tests were not completed. This may be due to a conflicting OS or limitations of the function. Sorry Uwu\n")
+            self.solutions_button.show()
         else:
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("No issue found\n")
@@ -998,9 +997,6 @@ class FixerZApp(QMainWindow):
                 document = Document()
                 document.add_paragraph(text)
                 document.save(file_path)
-
-    def show_specs(self):
-        print()
     
     def scan_button_clicked(self):
         auto_fix_icon = QIcon("images/autofix.png")
@@ -1295,11 +1291,69 @@ class FixerZApp(QMainWindow):
             self.show_solutions_container.show()
 
     def cache_settings_set_button_clicked(self):
-        result = fix_functions.disk_cleanup_setup(1)
-        if "error" in result:
+        try:
+            result = fix_functions.disk_cleanup_setup(1)
+            if "error" in result:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error Occurred")
+                msg_box.setText("Sorry, Contact the Developers UwU")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+            else:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Success")
+                msg_box.setText("You can now delete the cache with Disk Cleanup")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "color: white;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+                self.section1_run_button = QPushButton("Clear Cache")
+                self.section1_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+                self.section1_run_button.clicked.connect(self.cache_settings_run_button_clicked)
+                self.section1_container.layout().addWidget(self.section1_run_button)
+        except:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Error Occurred")
-            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setText("Sorry,You may not be using Windows OS or some other error may be preventing this function from executing")
             msg_box.setStyleSheet(
                 "QMessageBox {"
                 "background-color: #F2F2F2;"
@@ -1318,104 +1372,159 @@ class FixerZApp(QMainWindow):
                 "}"
                 "QMessageBox QPushButton:hover {"
                 "background-color: #005EAD;"
-                "}"
-            )
-            msg_box.addButton("Ok", QMessageBox.AcceptRole)
-            msg_box.exec_()
-        else:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Success")
-            msg_box.setText("You can now delete the cache with Disk Cleanup")
-            msg_box.setStyleSheet(
-                "QMessageBox {"
-                "background-color: #F2F2F2;"
-                "}"
-                "QMessageBox QLabel {"
-                "color: #333333;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QPushButton {"
-                "background-color: #007ACC;"
-                "color: white;"
-                "border: 1px solid #007ACC;"
-                "border-radius: 10px;"
-                "width: 100px;"
-                "height: 30px;"
-                "}"
-                "QMessageBox QPushButton:hover {"
-                "background-color: #005EAD;"
-                "color: white;"
-                "}"
-            )
-            msg_box.addButton("Ok", QMessageBox.AcceptRole)
-            msg_box.exec_()
-            self.section1_run_button = QPushButton("Clear Cache")
-            self.section1_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
-            self.section1_run_button.clicked.connect(self.cache_settings_run_button_clicked)
-            self.section1_container.layout().addWidget(self.section1_run_button)
-
-    def cache_settings_run_button_clicked(self):
-        result = fix_functions.disk_cleanup(1)
-        if "error" in result:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Error Occurred")
-            msg_box.setText("Sorry, Contact the Developers UwU")
-            msg_box.setStyleSheet(
-                "QMessageBox {"
-                "background-color: #F2F2F2;"
-                "}"
-                "QMessageBox QLabel {"
-                "color: #333333;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QPushButton {"
-                "background-color: #007ACC;"
-                "color: white;"
-                "border: 1px solid #007ACC;"
-                "border-radius: 10px;"
-                "width: 100px;"
-                "height: 30px;"
-                "}"
-                "QMessageBox QPushButton:hover {"
-                "background-color: #005EAD;"
-                "}"
-            )
-            msg_box.addButton("Ok", QMessageBox.AcceptRole)
-            msg_box.exec_()
-        else:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Success")
-            msg_box.setText("Cache Cleared Successfully")
-            msg_box.setStyleSheet(
-                "QMessageBox {"
-                "background-color: #F2F2F2;"
-                "}"
-                "QMessageBox QLabel {"
-                "color: #333333;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QPushButton {"
-                "background-color: #007ACC;"
-                "color: white;"
-                "border: 1px solid #007ACC;"
-                "border-radius: 10px;"
-                "width: 100px;"
-                "height: 30px;"
-                "}"
-                "QMessageBox QPushButton:hover {"
-                "background-color: #005EAD;"
-                "color: white;"
                 "}"
             )
             msg_box.addButton("Ok", QMessageBox.AcceptRole)
             msg_box.exec_()
 
+    def cache_settings_run_button_clicked(self):
+        try:
+            result = fix_functions.disk_cleanup(1)
+            if "error" in result:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error Occurred")
+                msg_box.setText("Sorry, Contact the Developers UwU")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+            else:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Success")
+                msg_box.setText("Cache Cleared Successfully")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "color: white;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+        except:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Error Occurred")
+            msg_box.setText("Sorry,You may not be using Windows OS or some other error may be preventing this function from executing")
+            msg_box.setStyleSheet(
+                "QMessageBox {"
+                "background-color: #F2F2F2;"
+                "}"
+                "QMessageBox QLabel {"
+                "color: #333333;"
+                "font-size: 14px;"
+                "}"
+                "QMessageBox QPushButton {"
+                "background-color: #007ACC;"
+                "color: white;"
+                "border: 1px solid #007ACC;"
+                "border-radius: 10px;"
+                "width: 100px;"
+                "height: 30px;"
+                "}"
+                "QMessageBox QPushButton:hover {"
+                "background-color: #005EAD;"
+                "}"
+            )
+            msg_box.addButton("Ok", QMessageBox.AcceptRole)
+            msg_box.exec_()
+
+        
     def disk_analyse_button_clicked(self):
-        result = fix_functions.analyze_all_drives()
-        if "failure" in result:
+        try:
+            result = fix_functions.analyze_all_drives()
+            if "failure" in result:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error Occurred")
+                msg_box.setText("Sorry, Contact the Developers UwU")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+            else:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Success")
+                msg_box.setText("All Disks Analyzed Successfully")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "color: white;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+                self.section2_run_button = QPushButton("Defragment Disk")
+                self.section2_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
+                self.section2_run_button.clicked.connect(self.disk_defrag_run_button_clicked)
+                self.section2_container.layout().addWidget(self.section2_run_button)
+        except:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Error Occurred")
-            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setText("Sorry,You may not be using Windows OS or some other error may be preventing this function from executing")
             msg_box.setStyleSheet(
                 "QMessageBox {"
                 "background-color: #F2F2F2;"
@@ -1438,44 +1547,67 @@ class FixerZApp(QMainWindow):
             )
             msg_box.addButton("Ok", QMessageBox.AcceptRole)
             msg_box.exec_()
-        else:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Success")
-            msg_box.setText("All Disks Analyzed Successfully")
-            msg_box.setStyleSheet(
-                "QMessageBox {"
-                "background-color: #F2F2F2;"
-                "}"
-                "QMessageBox QLabel {"
-                "color: #333333;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QPushButton {"
-                "background-color: #007ACC;"
-                "color: white;"
-                "border: 1px solid #007ACC;"
-                "border-radius: 10px;"
-                "width: 100px;"
-                "height: 30px;"
-                "}"
-                "QMessageBox QPushButton:hover {"
-                "background-color: #005EAD;"
-                "color: white;"
-                "}"
-            )
-            msg_box.addButton("Ok", QMessageBox.AcceptRole)
-            msg_box.exec_()
-            self.section2_run_button = QPushButton("Defragment Disk")
-            self.section2_run_button.setStyleSheet("color: white;background-color: #3a5488;border: none; border-radius: 20px;height: 30px;")
-            self.section2_run_button.clicked.connect(self.disk_defrag_run_button_clicked)
-            self.section2_container.layout().addWidget(self.section2_run_button)
 
     def disk_defrag_run_button_clicked(self):
-        result = fix_functions.defragment_all_drives()
-        if "failure" in result:
+        try:
+            result = fix_functions.defragment_all_drives()
+            if "failure" in result:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Error Occurred")
+                msg_box.setText("Sorry, Contact the Developers UwU")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+            else:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Success")
+                msg_box.setText("Disk Defragmented Successfully")
+                msg_box.setStyleSheet(
+                    "QMessageBox {"
+                    "background-color: #F2F2F2;"
+                    "}"
+                    "QMessageBox QLabel {"
+                    "color: #333333;"
+                    "font-size: 14px;"
+                    "}"
+                    "QMessageBox QPushButton {"
+                    "background-color: #007ACC;"
+                    "color: white;"
+                    "border: 1px solid #007ACC;"
+                    "border-radius: 10px;"
+                    "width: 100px;"
+                    "height: 30px;"
+                    "}"
+                    "QMessageBox QPushButton:hover {"
+                    "background-color: #005EAD;"
+                    "color: white;"
+                    "}"
+                )
+                msg_box.addButton("Ok", QMessageBox.AcceptRole)
+                msg_box.exec_()
+        except:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Error Occurred")
-            msg_box.setText("Sorry, Contact the Developers UwU")
+            msg_box.setText("Sorry,You may not be using Windows OS or some other error may be preventing this function from executing")
             msg_box.setStyleSheet(
                 "QMessageBox {"
                 "background-color: #F2F2F2;"
@@ -1494,33 +1626,6 @@ class FixerZApp(QMainWindow):
                 "}"
                 "QMessageBox QPushButton:hover {"
                 "background-color: #005EAD;"
-                "}"
-            )
-            msg_box.addButton("Ok", QMessageBox.AcceptRole)
-            msg_box.exec_()
-        else:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Success")
-            msg_box.setText("Disk Defragmented Successfully")
-            msg_box.setStyleSheet(
-                "QMessageBox {"
-                "background-color: #F2F2F2;"
-                "}"
-                "QMessageBox QLabel {"
-                "color: #333333;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QPushButton {"
-                "background-color: #007ACC;"
-                "color: white;"
-                "border: 1px solid #007ACC;"
-                "border-radius: 10px;"
-                "width: 100px;"
-                "height: 30px;"
-                "}"
-                "QMessageBox QPushButton:hover {"
-                "background-color: #005EAD;"
-                "color: white;"
                 "}"
             )
             msg_box.addButton("Ok", QMessageBox.AcceptRole)
@@ -1529,7 +1634,7 @@ class FixerZApp(QMainWindow):
     def windows_run_quick_scan(self):
         scan_message_box = QMessageBox(self)
         scan_message_box.setWindowTitle("Scan Running")
-        scan_message_box.setText("The scan is in progress. Please wait.")
+        scan_message_box.setText("The scan is in progress. Please wait. \nThis may take some time")
         scan_message_box.setStandardButtons(QMessageBox.NoButton)
         scan_message_box.setModal(True)
         scan_message_box.setStyleSheet(
