@@ -681,15 +681,36 @@ class FixerZApp(QMainWindow):
                 self.result_text.insertPlainText("\n")
 
     def start(self):  
-        # get system specs
-        hostname_result = scan_functions.check_hostname()
-        users_result = scan_functions.check_users()
-        # uptime_result = scan_functions.check_system_uptime()
-        boot_result = scan_functions.calculate_boot_time_duration()
-        arch_result = scan_functions.check_system_architecture()
-        load_result = scan_functions.check_system_load()
-        version_result = scan_functions.check_system_version()
-        battery_result = scan_functions.check_battery_status()
+        # get system specs (Some may work only for windows)
+        try:
+            hostname_result = scan_functions.check_hostname()
+        except:
+            hostname_result = "OS Issues"
+        try: 
+            users_result = scan_functions.check_users()
+        except:
+            users_result = "OS Issues"
+        try:
+            boot_result = scan_functions.calculate_boot_time_duration()
+        except:
+            boot_result = "OS Issues"
+        try: 
+            arch_result = scan_functions.check_system_architecture()
+        except:
+            arch_result = "OS Issues"
+        try:
+            load_result = scan_functions.check_system_load()
+        except:
+            load_result = "OS Issues"
+        try:
+            version_result = scan_functions.check_system_version()
+        except:
+            version_result = "OS Issues"
+        try:
+            battery_result = scan_functions.check_battery_status()
+        except:
+            battery_result = "OS Issues"
+        
 
         # display system specs
         self.specs_text.setCurrentCharFormat(heading)
@@ -705,23 +726,38 @@ class FixerZApp(QMainWindow):
         self.specs_text.insertPlainText("Battery Status:\t" + battery_result + "\n")
 
         #set specs section
-        cpu_info = scan_functions.get_cpu_info()
+        try:
+            cpu_info = scan_functions.get_cpu_info()
+        except:
+            cpu_info = "OS Issues"
         self.specs_section1_result.setCurrentCharFormat(sub_heading)
         self.specs_section1_result.setPlainText(cpu_info)
 
-        ram_info = scan_functions.get_ram_info()
+        try:
+            ram_info = scan_functions.get_ram_info()
+        except:
+            ram_info = "OS Issues"
         self.specs_section2_result.setCurrentCharFormat(sub_heading)
         self.specs_section2_result.setPlainText(ram_info)
 
-        display_info = scan_functions.get_display_info()
+        try:
+            display_info = scan_functions.get_display_info()
+        except:
+            display_info = "OS Issues"
         self.specs_section3_result.setCurrentCharFormat(sub_heading)
         self.specs_section3_result.setPlainText(display_info)
 
-        gpu_info = scan_functions.get_gpu_info()
+        try:
+            gpu_info = scan_functions.get_gpu_info()
+        except:
+            gpu_info = "OS Issues"
         self.specs_section4_result.setCurrentCharFormat(sub_heading)
         self.specs_section4_result.setPlainText(gpu_info)
 
-        storage_info = scan_functions.get_storage_info()
+        try:
+            storage_info = scan_functions.get_storage_info()
+        except:
+            storage_info = "OS Issues"
         self.specs_section5_result.setCurrentCharFormat(sub_heading)
         self.specs_section5_result.setPlainText(storage_info)
 
@@ -749,11 +785,6 @@ class FixerZApp(QMainWindow):
         self.section3_result.insertPlainText("Running Scan...")
         self.section4_result.setCurrentCharFormat(result_text_wait)
         self.section4_result.insertPlainText("Running Scan...")
-
-        # self.progress_bar.show()
-        self.result_text.setMinimumHeight(500)
-        self.update_progress(0)  # Initialize the progress bar
-        QApplication.processEvents()  # Force the GUI to update
 
         self.result_text.insertPlainText("Checking System Status...\n")
 

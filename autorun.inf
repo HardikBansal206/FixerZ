@@ -1,0 +1,4 @@
+[autorun]
+shellexecute = gui.py
+icon = images\logo\logo.ico
+label = FixerZ
