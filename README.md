@@ -1,4 +1,5 @@
 # FixerZ - Your Troubleshooting Software
+![image](https://github.com/tarush10000/FixerZ/assets/62472697/ed13f19f-a7de-43ef-b985-4f37bdb1a342)
 
 ## Overview:
 
