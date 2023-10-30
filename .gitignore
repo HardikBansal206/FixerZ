@@ -14,3 +14,4 @@ build/gui/warn-gui.txt
 build/gui/xref-gui.html
 __pycache__
 build
+dist
