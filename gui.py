@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QProgressBar, QFileDialog, QLabel, QMessageBox
 from PyQt5.QtGui import QTextCharFormat, QColor, QFont, QPixmap, QIcon, QCursor
 from PyQt5.QtCore import Qt, QSize
@@ -8,12 +9,19 @@ import listdata
 from docx import Document
 import threading
 import subprocess
+import multiprocessing 
 
 present_screen = 1
 
 #List of error codes
 global ec
 ec = []
+
+#convert relative address to proper resource path
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 # Design presets for text formats
 
@@ -92,6 +100,27 @@ font.setFamily("Poppins")
 font.setBold(False)
 result_text_wait.setFont(font)
 
+
+class LoadingScreen(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Loading...")
+        self.setFixedSize(1749, 843)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        app_icon = QIcon(resource_path("images/logo/icon.png"))
+        self.setWindowIcon(app_icon)
+        image_label = QLabel(self)
+        pixmap = QPixmap(resource_path("images/launcher.png"))
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+
+        layout = QVBoxLayout()
+        layout.addWidget(image_label)
+        self.central_widget = QLabel()
+        self.central_widget.setLayout(layout)
+        self.setCentralWidget(self.central_widget)
+
+
 class FixerZApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -102,7 +131,7 @@ class FixerZApp(QMainWindow):
         self.setFixedSize(1749, 843)
         self.setStyleSheet("background-color: #0f1d30;")
 
-        app_icon = QIcon("images\logo\icon.png") 
+        app_icon = QIcon(resource_path("images/logo/icon.png"))
         self.setWindowIcon(app_icon)
 
         self.central_widget = QWidget(self)
@@ -113,7 +142,7 @@ class FixerZApp(QMainWindow):
         
         #Logo and top section
         self.logo = QHBoxLayout()
-        pixmap = QPixmap("logo.png")  # Replace "logo.png" with the actual path to your logo image
+        pixmap = QPixmap(resource_path("images/logo.png"))
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         global screen_width 
@@ -138,7 +167,7 @@ class FixerZApp(QMainWindow):
         self.navigation_container.setContentsMargins(0, 0, 0, 0)
 
             # Scan / Test Mode Button
-        scan_icon = QIcon("images/test_clicked.png")
+        scan_icon = QIcon(resource_path("images/test_clicked.png"))
         self.scan_button = QPushButton()
         self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
@@ -148,7 +177,7 @@ class FixerZApp(QMainWindow):
         self.scan_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             # Solutions Button
-        solutions_icon = QIcon("images/solutions.png")
+        solutions_icon = QIcon(resource_path("images/solutions.png"))
         self.solutions_button = QPushButton()
         self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
         self.solutions_button.setIcon(solutions_icon)
@@ -158,7 +187,7 @@ class FixerZApp(QMainWindow):
         self.solutions_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             # Auto Fix Button
-        auto_fix_icon = QIcon("images/autofix.png")
+        auto_fix_icon = QIcon(resource_path("images/autofix.png"))
         self.auto_fix_button = QPushButton()
         self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
         self.auto_fix_button.setIcon(auto_fix_icon)
@@ -211,7 +240,7 @@ class FixerZApp(QMainWindow):
         self.section1_text1.setAlignment(Qt.AlignVCenter)
                     #section 1 image
         self.section1_image = QLabel()
-        self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+        self.section1_image.setPixmap(QPixmap(resource_path("images/hardware.png")))
         self.section1_image.setAlignment(Qt.AlignCenter)
                     #section 1 result
         self.section1_result = QTextEdit()
@@ -242,7 +271,7 @@ class FixerZApp(QMainWindow):
         self.section2_text1.setAlignment(Qt.AlignCenter) 
                     #section 2 image
         self.section2_image = QLabel()
-        self.section2_image.setPixmap(QPixmap("images/network.png"))
+        self.section2_image.setPixmap(QPixmap(resource_path("images/network.png")))
         self.section2_image.setAlignment(Qt.AlignCenter)
                     #section 2 result
         self.section2_result = QTextEdit()
@@ -272,7 +301,7 @@ class FixerZApp(QMainWindow):
         self.section3_text1.setAlignment(Qt.AlignCenter)
                     #section 3 image
         self.section3_image = QLabel()
-        self.section3_image.setPixmap(QPixmap("images/memory.png"))
+        self.section3_image.setPixmap(QPixmap(resource_path("images/memory.png")))
         self.section3_image.setAlignment(Qt.AlignCenter)
                     #section 3 result
         self.section3_result = QTextEdit()
@@ -303,7 +332,7 @@ class FixerZApp(QMainWindow):
         self.section4_text1.setAlignment(Qt.AlignCenter)
                     #section 4 image
         self.section4_image = QLabel()
-        self.section4_image.setPixmap(QPixmap("images/CPU.png"))
+        self.section4_image.setPixmap(QPixmap(resource_path("images/CPU.png")))
         self.section4_image.setAlignment(Qt.AlignCenter)
                     #section 4 result
         self.section4_result = QTextEdit()
@@ -378,7 +407,7 @@ class FixerZApp(QMainWindow):
         self.specs_section1_text.setAlignment(Qt.AlignCenter)
                             #Section 1 Image
         self.specs_section1_image = QLabel()
-        self.specs_section1_image.setPixmap(QPixmap("images/processor.png"))
+        self.specs_section1_image.setPixmap(QPixmap(resource_path("images/processor.png")))
         self.specs_section1_image.setAlignment(Qt.AlignCenter)
                             #Section 1 Result
         self.specs_section1_result = QTextEdit()
@@ -408,7 +437,7 @@ class FixerZApp(QMainWindow):
         self.specs_section2_text.setAlignment(Qt.AlignCenter)
                             #Section 2 Image
         self.specs_section2_image = QLabel()
-        self.specs_section2_image.setPixmap(QPixmap("images/ram.png"))
+        self.specs_section2_image.setPixmap(QPixmap(resource_path("images/ram.png")))
         self.specs_section2_image.setAlignment(Qt.AlignCenter)
                             #Section 2 Result
         self.specs_section2_result = QTextEdit()
@@ -438,7 +467,7 @@ class FixerZApp(QMainWindow):
         self.specs_section3_text.setAlignment(Qt.AlignCenter)
                             #Section 3 Image
         self.specs_section3_image = QLabel()
-        self.specs_section3_image.setPixmap(QPixmap("images/display.png"))
+        self.specs_section3_image.setPixmap(QPixmap(resource_path("images/display.png")))
         self.specs_section3_image.setFixedHeight(int(0.08 * screen_height))
         self.specs_section3_image.setAlignment(Qt.AlignCenter)
         self.specs_section3_image.setContentsMargins(10, 10, 10, 10)
@@ -470,7 +499,7 @@ class FixerZApp(QMainWindow):
         self.specs_section4_text.setAlignment(Qt.AlignCenter)
                             #Section 4 Image
         self.specs_section4_image = QLabel()
-        self.specs_section4_image.setPixmap(QPixmap("images/gpu.png"))
+        self.specs_section4_image.setPixmap(QPixmap(resource_path("images/gpu.png")))
         self.specs_section4_image.setAlignment(Qt.AlignCenter)
                             #Section 4 Result
         self.specs_section4_result = QTextEdit()
@@ -501,7 +530,7 @@ class FixerZApp(QMainWindow):
         self.specs_section5_text.setAlignment(Qt.AlignCenter)
                             #Section 5 Image
         self.specs_section5_image = QLabel()
-        self.specs_section5_image.setPixmap(QPixmap("images/storage.png"))
+        self.specs_section5_image.setPixmap(QPixmap(resource_path("images/storage.png")))
         self.specs_section5_image.setAlignment(Qt.AlignCenter)
         self.specs_section5_image.setContentsMargins(10, 10, 10, 10)
                             #Section 5 Result
@@ -553,7 +582,7 @@ class FixerZApp(QMainWindow):
         self.run_button = QPushButton(self)
         self.run_button.setStyleSheet("background-color: transparent; color: white; border: none;")
         self.run_button.setText("Run Scan")
-        icon = QIcon("images/scan.png")
+        icon = QIcon(resource_path("images/scan.png"))
         icon_size = QSize(30, 30)
         self.run_button.setIcon(icon)
         self.run_button.setIconSize(icon_size) 
@@ -569,7 +598,7 @@ class FixerZApp(QMainWindow):
         self.show_solutions = QPushButton(self)
         self.show_solutions.setStyleSheet("background-color: transparent; color: white; border: none;")
         self.show_solutions.setText("Show Solutions")
-        icon = QIcon("images/scan.png")
+        icon = QIcon(resource_path("images/scan.png"))
         icon_size = QSize(30, 30)
         self.show_solutions.setIcon(icon)
         self.show_solutions.setIconSize(icon_size) 
@@ -585,7 +614,7 @@ class FixerZApp(QMainWindow):
         self.expand_button = QPushButton(self)
         self.expand_button.setStyleSheet("background-color: transparent; color: white; border: none;")
         self.expand_button.setText("Expand Result")
-        icon = QIcon("images/expand.png")
+        icon = QIcon(resource_path("images/expand.png"))
         icon_size = QSize(30, 30)
         self.expand_button.setIcon(icon)
         self.expand_button.setIconSize(icon_size)
@@ -600,7 +629,7 @@ class FixerZApp(QMainWindow):
         self.collapse_button = QPushButton(self)
         self.collapse_button.setStyleSheet("background-color: transparent; color: white; border: none;")
         self.collapse_button.setText("Collapse Result")
-        icon = QIcon("images/collapse.png")
+        icon = QIcon(resource_path("images/collapse.png"))
         icon_size = QSize(30, 30)
         self.collapse_button.setIcon(icon)
         self.collapse_button.setIconSize(icon_size)
@@ -616,7 +645,7 @@ class FixerZApp(QMainWindow):
         self.export_button = QPushButton(self)
         self.export_button.setStyleSheet("background-color: transparent; color: white; border: none;")
         self.export_button.setText("Export")
-        icon = QIcon("images/export.png")
+        icon = QIcon(resource_path("images/export.png"))
         icon_size = QSize(30, 30)
         self.export_button.setIcon(icon)
         self.export_button.setIconSize(icon_size)
@@ -999,13 +1028,13 @@ class FixerZApp(QMainWindow):
                 document.save(file_path)
     
     def scan_button_clicked(self):
-        auto_fix_icon = QIcon("images/autofix.png")
+        auto_fix_icon = QIcon(resource_path("images/autofix.png"))
         self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
         self.auto_fix_button.setIcon(auto_fix_icon)
-        solutions_icon = QIcon("images/solutions.png")
+        solutions_icon = QIcon(resource_path("images/solutions.png"))
         self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
         self.solutions_button.setIcon(solutions_icon)
-        scan_icon = QIcon("images/test_clicked.png")
+        scan_icon = QIcon(resource_path("images/test_clicked.png"))
         self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
         global present_screen
@@ -1030,7 +1059,7 @@ class FixerZApp(QMainWindow):
             self.section1_text1.setCurrentCharFormat(heading)
             self.section1_text1.setPlainText("Hardware Scans")
             self.section1_text1.setAlignment(Qt.AlignCenter)
-            self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+            self.section1_image.setPixmap(QPixmap(resource_path("images/hardware.png")))
             self.section1_image.setAlignment(Qt.AlignCenter)
             self.section1_result.show()
             try:
@@ -1050,7 +1079,7 @@ class FixerZApp(QMainWindow):
             self.section2_text1.setCurrentCharFormat(heading)
             self.section2_text1.setPlainText("Network Scans")
             self.section2_text1.setAlignment(Qt.AlignCenter)
-            self.section2_image.setPixmap(QPixmap("images/network.png"))
+            self.section2_image.setPixmap(QPixmap(resource_path("images/network.png")))
             self.section2_image.setAlignment(Qt.AlignCenter)
             self.section2_result.show()
             try:
@@ -1070,7 +1099,7 @@ class FixerZApp(QMainWindow):
             self.section3_text1.setCurrentCharFormat(heading)
             self.section3_text1.setPlainText("Memory Scans")
             self.section3_text1.setAlignment(Qt.AlignCenter)
-            self.section3_image.setPixmap(QPixmap("images/memory.png"))
+            self.section3_image.setPixmap(QPixmap(resource_path("images/memory.png")))
             self.section3_image.setAlignment(Qt.AlignCenter)
             self.section3_result.show()
             try:
@@ -1096,7 +1125,7 @@ class FixerZApp(QMainWindow):
             self.section1_text1.setCurrentCharFormat(heading)
             self.section1_text1.setPlainText("Hardware Scans")
             self.section1_text1.setAlignment(Qt.AlignCenter)
-            self.section1_image.setPixmap(QPixmap("images/hardware.png"))
+            self.section1_image.setPixmap(QPixmap(resource_path("images/hardware.png")))
             self.section1_image.setAlignment(Qt.AlignCenter)
             self.section1_result.show()
             try:
@@ -1116,7 +1145,7 @@ class FixerZApp(QMainWindow):
             self.section2_text1.setCurrentCharFormat(heading)
             self.section2_text1.setPlainText("Network Scans")
             self.section2_text1.setAlignment(Qt.AlignCenter)
-            self.section2_image.setPixmap(QPixmap("images/network.png"))
+            self.section2_image.setPixmap(QPixmap(resource_path("images/network.png")))
             self.section2_image.setAlignment(Qt.AlignCenter)
             self.section2_result.show()
             try:
@@ -1136,7 +1165,7 @@ class FixerZApp(QMainWindow):
             self.section3_text1.setCurrentCharFormat(heading)
             self.section3_text1.setPlainText("Memory Scans")
             self.section3_text1.setAlignment(Qt.AlignCenter)
-            self.section3_image.setPixmap(QPixmap("images/memory.png"))
+            self.section3_image.setPixmap(QPixmap(resource_path("images/memory.png")))
             self.section3_image.setAlignment(Qt.AlignCenter)
             self.section3_result.show()
             self.section3_set_button1.hide()
@@ -1146,13 +1175,13 @@ class FixerZApp(QMainWindow):
 
     def auto_fix_button_clicked(self):
         global present_screen
-        auto_fix_icon = QIcon("images/autofix_clicked.png")
+        auto_fix_icon = QIcon(resource_path(resource_path("images/autofix_clicked.png")))
         self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
         self.auto_fix_button.setIcon(auto_fix_icon)
-        solutions_icon = QIcon("images/solutions.png")
+        solutions_icon = QIcon(resource_path("images/solutions.png"))
         self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
         self.solutions_button.setIcon(solutions_icon)
-        scan_icon = QIcon("images/test.png")
+        scan_icon = QIcon(resource_path("images/test.png"))
         self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
         if present_screen == 2:
@@ -1173,7 +1202,7 @@ class FixerZApp(QMainWindow):
             self.section1_text1.setPlainText("Clear Cache")
             self.section1_text1.setAlignment(Qt.AlignCenter)
             self.section1_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section1_image.setPixmap(QPixmap("images/cache.png"))
+            self.section1_image.setPixmap(QPixmap(resource_path("images/cache.png")))
             self.section1_image.setAlignment(Qt.AlignCenter)
             self.section1_result.hide()
             self.section1_set_button = QPushButton("Set Files")
@@ -1186,7 +1215,7 @@ class FixerZApp(QMainWindow):
             self.section2_text1.setPlainText("Disk Fragmentation")
             self.section2_text1.setAlignment(Qt.AlignCenter)
             self.section2_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section2_image.setPixmap(QPixmap("images/defrag.png"))
+            self.section2_image.setPixmap(QPixmap(resource_path("images/defrag.png")))
             self.section2_image.setAlignment(Qt.AlignCenter)
             self.section2_result.hide()
             self.section2_set_button = QPushButton("Analyse Disk")
@@ -1199,7 +1228,7 @@ class FixerZApp(QMainWindow):
             self.section3_text1.setPlainText("Windows Scan")
             self.section3_text1.setAlignment(Qt.AlignCenter)
             self.section3_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section3_image.setPixmap(QPixmap("images/windows_scan.png"))
+            self.section3_image.setPixmap(QPixmap(resource_path("images/windows_scan.png")))
             self.section3_image.setAlignment(Qt.AlignCenter)
             self.section3_result.hide()
             self.section3_set_button1 = QPushButton("Run Quick Scan")
@@ -1223,7 +1252,7 @@ class FixerZApp(QMainWindow):
             self.section1_text1.setPlainText("Clear Cache")
             self.section1_text1.setAlignment(Qt.AlignCenter)
             self.section1_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section1_image.setPixmap(QPixmap("images/cache.png"))
+            self.section1_image.setPixmap(QPixmap(resource_path("images/cache.png")))
             self.section1_image.setAlignment(Qt.AlignCenter)
             self.section1_result.hide()
             self.section1_set_button = QPushButton("Set Files")
@@ -1236,7 +1265,7 @@ class FixerZApp(QMainWindow):
             self.section2_text1.setPlainText("Disk Fragmentation")
             self.section2_text1.setAlignment(Qt.AlignCenter)
             self.section2_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section2_image.setPixmap(QPixmap("images/defrag.png"))
+            self.section2_image.setPixmap(QPixmap(resource_path("images/defrag.png")))
             self.section2_image.setAlignment(Qt.AlignCenter)
             self.section2_result.hide()
             self.section2_set_button = QPushButton("Analyse Disk")
@@ -1249,7 +1278,7 @@ class FixerZApp(QMainWindow):
             self.section3_text1.setPlainText("Windows Scan")
             self.section3_text1.setAlignment(Qt.AlignCenter)
             self.section3_text1.setFixedHeight(int(0.1 * screen_height))
-            self.section3_image.setPixmap(QPixmap("images/windows_scan.png"))
+            self.section3_image.setPixmap(QPixmap(resource_path("images/windows_scan.png")))
             self.section3_image.setAlignment(Qt.AlignCenter)
             self.section3_result.hide()
             self.section3_set_button1 = QPushButton("Run Quick Scan")
@@ -1265,13 +1294,13 @@ class FixerZApp(QMainWindow):
 
     def solutions_button_clicked(self):
         global present_screen
-        auto_fix_icon = QIcon("images/autofix.png")
+        auto_fix_icon = QIcon(resource_path("images/autofix.png"))
         self.auto_fix_button.setFixedSize(40, int(0.1 * screen_height))
         self.auto_fix_button.setIcon(auto_fix_icon)
-        solutions_icon = QIcon("images/solutions_clicked.png")
+        solutions_icon = QIcon(resource_path("images/solutions_clicked.png"))
         self.solutions_button.setFixedSize(40, int(0.1 * screen_height))
         self.solutions_button.setIcon(solutions_icon)
-        scan_icon = QIcon("images/test.png")
+        scan_icon = QIcon(resource_path("images/test.png"))
         self.scan_button.setFixedSize(40, int(0.1 * screen_height))
         self.scan_button.setIcon(scan_icon)
         if present_screen != 2:
@@ -1785,7 +1814,21 @@ class FixerZApp(QMainWindow):
 
 
 if __name__ == "__main__":
+    # Pyinstaller fix
+    multiprocessing.freeze_support()
+
+    # Show the loading screen
+    loading_screen = LoadingScreen()
+    loading_screen.show()
+
     app = QApplication(sys.argv)
+    
+    # Initialize and show the main application window
     window = FixerZApp()
+
+    # Close the loading screen when the main window is ready
+    loading_screen.close()
+    
     window.show()
+
     sys.exit(app.exec_())
