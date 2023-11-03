@@ -34,10 +34,25 @@ FixerZ is a powerful, user-friendly, and transparent tool designed to diagnose a
 
 - **Export Functionality:** Easily share your results or keep them for future reference with the built-in export feature.
 
+## Important info for exe
+- The exe may be flagged as a Trojan or Malware by the Windows Defender or the Antivirus being used.
+This is because of the cmd scripts being used to perform the "Cache Clean", "Disk Defragment" and "Windows Scan" features.
+![image](https://github.com/tarush10000/FixerZ/assets/62472697/b5e4f231-2c75-4282-92db-7f047e500a61) <br>
+(for Cache Clean)
+![image](https://github.com/tarush10000/FixerZ/assets/62472697/4139edbb-9302-41ca-a6f1-0483b0e66b98) <br>
+(for Windows Scan)
+![image](https://github.com/tarush10000/FixerZ/assets/62472697/1f2b3f25-760a-42fa-96de-c66bac3bf6b1) <br>
+(for Disk Defragmentation)
+- Be careful and to use the exe, whitelist the folder or exe in your antivirus settings
+Check these links 
+[Windows Defender](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26#:~:text=Go%20to%20Start%20%3E%20Settings%20%3E%20Update,%2C%20file%20types%2C%20or%20process.),
+[McAfee](https://www.mcafee.com/support/?page=shell&shell=article-view&articleId=TS102056), [Norton](https://support.norton.com/sp/en/us/home/current/solutions/v3672136)
+- All the code is publicly available and more additions will be made to make it safer for the user.
+  
 ## Images
 ![image](https://github.com/HardikBansal206/FixerZ/assets/62472697/52a6bba9-8f76-45d8-a326-804d0b911920)
 (The initial opening screen and "Scan" section)
-![image](https://github.com/HardikBansal206/FixerZ/assets/62472697/06428f62-c7b5-4d6f-bb78-01656f8d7db1)
+![image](https://github.com/tarush10000/FixerZ/assets/62472697/0840ee08-34f9-4647-a127-a3a742cc99aa)
 (The detailed results)
 ![image](https://github.com/HardikBansal206/FixerZ/assets/62472697/09aeb035-af32-4dca-830e-155b24a6153b)
 ("Solutions" section)
