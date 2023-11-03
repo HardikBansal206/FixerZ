@@ -1817,11 +1817,11 @@ if __name__ == "__main__":
     # Pyinstaller fix
     multiprocessing.freeze_support()
 
+    app = QApplication(sys.argv)
+    
     # Show the loading screen
     loading_screen = LoadingScreen()
     loading_screen.show()
-
-    app = QApplication(sys.argv)
     
     # Initialize and show the main application window
     window = FixerZApp()

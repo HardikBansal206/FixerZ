@@ -39,7 +39,9 @@ def check_disk_usage():
 
 def check_network_status():
     try:
-        psutil.net_if_stats()
+        a = psutil.net_if_stats()
+        if "Wi-Fi" not in a:
+            return "Network error:"
         return "Network is operational."
     except Exception as e:
         return f"Network error: {str(e)}"
@@ -193,3 +195,10 @@ def get_storage_info():
         
         total_available_storage_gb += available_storage_gb
     return str(round(total_storage_gb, 2)) + " GB \n(" + str(round(total_available_storage_gb, 2)) + " GB available)"
+
+a = psutil.net_if_stats()
+print(a)
+if "Wi-Fi" in a:
+    print("Helo")
+else:
+    print("Bye")
