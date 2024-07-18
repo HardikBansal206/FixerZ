@@ -37,12 +37,41 @@ def check_disk_usage():
     else:
         return ["Disk usage is normal."]
 
-def check_network_status():
+def check_network_wifi_status():
     try:
-        psutil.net_if_stats()
-        return "Network is operational."
+        a = psutil.net_if_stats()
+        if "Wi-Fi" not in a:
+            return "Wifi is not operational."
+        return "Wifi is operational."
     except Exception as e:
-        return f"Network error: {str(e)}"
+        return f"Wifi is not operational."
+
+def check_network_et_status():
+    try:
+        a = psutil.net_if_stats()
+        if "Ethernet" not in a:
+            return "Ethernet is not operational."
+        return "Ethernet is operational."
+    except Exception as e:
+        return "Ethernet is not operational."
+
+def check_network_bt_status():
+    try:
+        a = psutil.net_if_stats()
+        if "Bluetooth Network Connection" not in a:
+            return "Bluetooth is not operational."
+        return "Bluetooth is operational."
+    except Exception as e:
+        return "Bluetooth is not operational."
+
+def check_network_LAN_status():
+    try:
+        a = psutil.net_if_stats()
+        if "Local Area Connection" not in a:
+            return "LAN is not operational."
+        return "LAN is operational."
+    except Exception as e:
+        return "LAN is not operational."
 
 def check_battery_status():
     battery = psutil.sensors_battery()

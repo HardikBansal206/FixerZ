@@ -833,9 +833,24 @@ class FixerZApp(QMainWindow):
             disk_result = "OS Issues"
 
         try:
-            network_result = scan_functions.check_network_status()
+            network_wifi_result = scan_functions.check_network_wifi_status()
         except:
-            network_result = "OS Issues"
+            network_wifi_result = "OS Issues"
+        
+        try:
+            network_et_result = scan_functions.check_network_et_status()
+        except:
+            network_et_result = "OS Issues"
+        
+        try:
+            network_bt_result = scan_functions.check_network_bt_status()
+        except:
+            network_bt_result = "OS Issues"
+        
+        try:
+            network_LAN_result = scan_functions.check_network_LAN_status()
+        except:
+            network_LAN_result = "OS Issues"
         
         try:
             usb_status = scan_functions.check_usb_ports()
@@ -888,17 +903,50 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(blue_format)
             self.result_text.insertPlainText("RAM Status: \t" + ram_result + "\n\n")
         
-        # NETWORK TEST RESULT
-        if "error" in network_result:
+        # Wi-Fi TEST RESULT
+        if "not" in network_wifi_result:
             self.result_text.setCurrentCharFormat(red_format)
-            self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
+            self.result_text.insertPlainText("Wi-Fi Status: \t" + network_wifi_result + "\n\n")
             issue += 1
             network_issue += 1
             ec.append("SI1")
         else:
             self.result_text.setCurrentCharFormat(blue_format)
-            self.result_text.insertPlainText("Network Status: \t" + network_result + "\n\n")
+            self.result_text.insertPlainText("Wi-Fi Status: \t" + network_wifi_result + "\n\n")
 
+        # Bluetooth TEST RESULT
+        if "not" in network_bt_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Bluetooth Status: \t" + network_bt_result + "\n\n")
+            issue += 1
+            network_issue += 1
+            ec.append("SI3")
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Bluetooth Status: \t" + network_bt_result + "\n\n")
+
+        # Ethernet TEST RESULT
+        if "not" in network_et_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("Ethernet Status: \t" + network_et_result + "\n\n")
+            issue += 1
+            network_issue += 1
+            ec.append("SI2")
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("Ethernet Status: \t" + network_et_result + "\n\n")
+
+        # LAN TEST RESULT
+        if "not" in network_LAN_result:
+            self.result_text.setCurrentCharFormat(red_format)
+            self.result_text.insertPlainText("LAN Status: \t" + network_LAN_result + "\n\n")
+            issue += 1
+            network_issue += 1
+            ec.append("SI4")
+        else:
+            self.result_text.setCurrentCharFormat(blue_format)
+            self.result_text.insertPlainText("LAN Status: \t" + network_LAN_result + "\n\n")
+        
         #USB TEST RESULT
         if "not" in usb_status or "Error" in usb_status:
             self.result_text.setCurrentCharFormat(red_format)
@@ -968,7 +1016,7 @@ class FixerZApp(QMainWindow):
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Potential issues detected. \nCheck the Possible Solutions Section\n")
             self.solutions_button.show()
-        elif mic_status == "OS Issues" or camera_status == "OS Issues" or usb_status == "OS Issues" or network_result == "OS Issues" or disk_result == "OS Issues" or ram_result == "OS Issues" or cpu_result == "OS Issues":
+        elif mic_status == "OS Issues" or camera_status == "OS Issues" or usb_status == "OS Issues" or network_wifi_result == "OS Issues" or disk_result == "OS Issues" or ram_result == "OS Issues" or cpu_result == "OS Issues" or network_bt_result == "OS Issues" or network_et_result == "OS Issues" or network_LAN_result == "OS Issues":
             self.result_text.setCurrentCharFormat(red_format)
             self.result_text.insertPlainText("Some tests were not completed. This may be due to a conflicting OS or limitations of the function. Sorry Uwu\n")
             self.solutions_button.show()
@@ -1817,11 +1865,11 @@ if __name__ == "__main__":
     # Pyinstaller fix
     multiprocessing.freeze_support()
 
+    app = QApplication(sys.argv)
+    
     # Show the loading screen
     loading_screen = LoadingScreen()
     loading_screen.show()
-
-    app = QApplication(sys.argv)
     
     # Initialize and show the main application window
     window = FixerZApp()
